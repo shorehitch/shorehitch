@@ -1,0 +1,7 @@
+node_modules/
+dist/
+src/imports/
+*.mp4
+*.m4v
+*.MP4
+shorehitch-dist.tar.gz

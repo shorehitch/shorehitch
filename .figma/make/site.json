@@ -1,0 +1,10 @@
+{
+  "description": "Enhance your website's conversion rate with a user-friendly design tailored for boaters, showcasing premium products and a lifetime warranty.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

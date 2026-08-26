@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+/*
+  Neue Montreal (brand font) — self-hosted.
+  Place your licensed .woff2 files in public/fonts/ and
+  uncomment the @font-face blocks below.
+*/
+
+/* @font-face {
+  font-family: 'Neue Montreal';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/NeueMontreal-Light.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Neue Montreal';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/NeueMontreal-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Neue Montreal';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/NeueMontreal-Italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Neue Montreal';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/NeueMontreal-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Neue Montreal';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/NeueMontreal-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Neue Montreal';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/NeueMontreal-BoldItalic.woff2') format('woff2');
+} */
+
+@theme {
+  --font-sans: 'Neue Montreal', 'Outfit', system-ui, sans-serif;
+
+  /* Brand palette */
+  --color-brand-black:  #000000;
+  --color-brand-cyan:   #4AC9D3;
+  --color-brand-steel:  #0044FE;
+  --color-brand-white:  #FFFFFF;
+
+  /* Surface steps */
+  --color-surface-0:  #000000;
+  --color-surface-1:  #0A0A0A;
+  --color-surface-2:  #111111;
+  --color-surface-3:  #1A1A1A;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 17px;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #000000;
+  color: #FFFFFF;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #4AC9D333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4AC9D3; }
+
+/* Announcement ticker */
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-track { animation: ticker 32s linear infinite; }
+.ticker-track:hover { animation-play-state: paused; }
+
+/* Cyan shimmer on hero headline */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.cyan-shimmer {
+  background: linear-gradient(90deg, #4AC9D3 0%, #a0edf2 45%, #4AC9D3 60%, #0044FE 100%);
+  background-size: 200% auto;
+  animation: shimmer 4s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card hover */
+.product-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(74,201,211,0.25);
+}
+
+/* CTA glow pulse — cyan */
+@keyframes pulse-cyan {
+  0%   { box-shadow: 0 0 0 0 rgba(74,201,211,0.5); }
+  70%  { box-shadow: 0 0 0 12px rgba(74,201,211,0); }
+  100% { box-shadow: 0 0 0 0 rgba(74,201,211,0); }
+}
+.cta-pulse { animation: pulse-cyan 2.5s ease-out infinite; }
+
+/* Stars */
+.star-fill { color: #4AC9D3; }
+
+/* Divider */
+.rule-cyan {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #4AC9D355, transparent);
+}
+
+/* Steel blue gradient text */
+.steel-text {
+  background: linear-gradient(135deg, #4AC9D3 0%, #0044FE 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Feature badge glow */
+.feature-glow {
+  box-shadow: 0 0 20px rgba(74, 201, 211, 0.15);
+}
