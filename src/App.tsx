@@ -26,6 +26,7 @@ const PRODUCT_HANDLES: Record<number, string> = {
   6: "dry-bag-storage",
   7: "shorehitch-bucket-pre-order-today",
   8: "custom-engraving",
+  9: "soft-top-handle-dek-x",
 };
 const HANDLE_TO_ID: Record<string, number> = Object.fromEntries(
   Object.entries(PRODUCT_HANDLES).map(([id, h]) => [h, Number(id)])
@@ -303,6 +304,21 @@ const PRODUCTS: Product[] = [
       "Ships with your order",
       "🇺🇸 Designed in USA",
     ],
+    inStock: true,
+  },
+  {
+    id: 9,
+    name: "Soft Top Handle",
+    price: 20.99,
+    originalPrice: 20.99,
+    media: [
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/693cc25bab2594c80a9de00d.png?v=1783102739" },
+    ],
+    tag: "Accessory",
+    stars: 5,
+    reviews: 0,
+    description: "Soft top handle for your ShoreHitch.",
+    features: ["Compatible with ShoreHitch OG and Baby ShoreHitch", "🇺🇸 Designed in USA"],
     inStock: true,
   },
 ];
@@ -1352,6 +1368,7 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
     await addToCart(product, selectedColor ?? undefined, qty);
     if (engravingEnabled) await addToCart(PRODUCTS.find((p) => p.id === 8)!, undefined, qty);
     if (hardCaseEnabled) await addToCart(PRODUCTS.find((p) => p.id === 6)!, undefined, qty);
+    if (softTopEnabled) await addToCart(PRODUCTS.find((p) => p.id === 9)!, undefined, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   }
