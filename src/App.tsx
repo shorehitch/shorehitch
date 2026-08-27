@@ -1245,7 +1245,7 @@ const PRODUCT_COLORS: Record<number, typeof ALL_COLORS> = {
   2: BABY_COLORS,  // Baby ShoreHitch — 4 only
 };
 
-function ProductPage({ productId, addToCart }: { productId: number; addToCart: (p: Product) => void }) {
+function ProductPage({ productId, addToCart }: { productId: number; addToCart: (p: Product, color?: string) => void }) {
   const product = PRODUCTS.find((p) => p.id === productId) ?? PRODUCTS[0];
   const isPreOrder = product.id === 7;
   const isEngraving = product.id === 8;
@@ -1298,14 +1298,14 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
   const addOnTotal =
     (engravingEnabled ? 59.99 : 0) +
     (softTopEnabled ? 20.99 : 0) +
-    (hardCaseEnabled ? 59.99 : 0);
+    (hardCaseEnabled ? 79.99 : 0);
 
   const lineTotal = (product.price + addOnTotal) * qty;
 
   const media = product.media;
 
   function handleAdd() {
-    for (let i = 0; i < qty; i++) addToCart(product);
+    for (let i = 0; i < qty; i++) addToCart(product, selectedColor ?? undefined);
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   }
@@ -1705,7 +1705,7 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
                   <div className="text-white/40 text-xs">IP67 waterproof case with custom foam insert</div>
                 </div>
               </div>
-              <span className="text-[#4AC9D3] font-bold text-sm">+$59.99</span>
+              <span className="text-[#4AC9D3] font-bold text-sm">+$79.99</span>
             </button>
           </div>}
 
@@ -1717,7 +1717,7 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
               </div>
               {engravingEnabled && <div className="flex justify-between text-white/50"><span>Custom Engraving</span><span>+$59.99</span></div>}
               {softTopEnabled && <div className="flex justify-between text-white/50"><span>Soft Top</span><span>+$20.99</span></div>}
-              {hardCaseEnabled && <div className="flex justify-between text-white/50"><span>Hard Case</span><span>+$59.99</span></div>}
+              {hardCaseEnabled && <div className="flex justify-between text-white/50"><span>Hard Case</span><span>+$79.99</span></div>}
               {qty > 1 && <div className="flex justify-between text-white/50"><span>Qty</span><span>× {qty}</span></div>}
               <div className="border-t border-white/10 mt-1 pt-1.5 flex justify-between text-white font-bold">
                 <span>Total</span><span>${lineTotal.toFixed(2)}</span>
@@ -2029,7 +2029,7 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
 }
 
 // ─── Cart Page ────────────────────────────────────────────────────────────────
-function CartPage({ cart, setPage, removeFromCart, onCheckout }: { cart: { product: Product; qty: number }[]; setPage: (p: Page) => void; removeFromCart: (id: number) => void; onCheckout: () => void }) {
+function CartPage({ cart, setPage, removeFromCart, onCheckout }: { cart: { product: Product; qty: number; color?: string }[]; setPage: (p: Page) => void; removeFromCart: (id: number, color?: string) => void; onCheckout: () => void }) {
   const subtotal = cart.reduce((s, item) => s + item.product.price * item.qty, 0);
   const shipping = subtotal >= 599 ? 0 : 14.99;
   const total = subtotal + shipping;
@@ -2071,8 +2071,8 @@ function CartPage({ cart, setPage, removeFromCart, onCheckout }: { cart: { produ
 
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2 flex flex-col gap-4">
-          {cart.map(({ product, qty }) => (
-            <div key={product.id} className="bg-[#0A0A0A] border border-white/8 rounded-xl p-4 flex gap-4">
+          {cart.map(({ product, qty, color }) => (
+            <div key={`${product.id}-${color ?? ""}`} className="bg-[#0A0A0A] border border-white/8 rounded-xl p-4 flex gap-4">
               <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-[#111]">
                 <MediaThumb item={product.media[0]} alt={product.name} className="w-full h-full object-cover" />
               </div>
@@ -2081,11 +2081,17 @@ function CartPage({ cart, setPage, removeFromCart, onCheckout }: { cart: { produ
                   <div>
                     <div className="text-[#4AC9D3]/60 text-[10px] font-bold tracking-widest uppercase">{product.tag}</div>
                     <div className="text-white font-semibold text-sm mt-0.5">{product.name}</div>
+                    {color && (
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-white/35 text-xs">Color:</span>
+                        <span className="text-[#4AC9D3] text-xs font-semibold">{color}</span>
+                      </div>
+                    )}
                     <div className="text-white/35 text-xs mt-0.5">Qty: {qty}</div>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <div className="text-white font-bold">${(product.price * qty).toFixed(2)}</div>
-                    <button onClick={() => removeFromCart(product.id)} className="text-white/20 hover:text-red-400 text-xs mt-1 transition-colors">
+                    <button onClick={() => removeFromCart(product.id, color)} className="text-white/20 hover:text-red-400 text-xs mt-1 transition-colors">
                       Remove
                     </button>
                   </div>
@@ -2643,11 +2649,23 @@ function Footer({ setPage }: { setPage: (p: Page) => void }) {
           <div>
             <div className="text-white/25 text-[10px] font-bold tracking-widest uppercase mb-4">Support</div>
             <div className="flex flex-col gap-3">
-              {["Contact Us", "Warranty Claim", "Shipping Info", "Returns", "FAQs"].map((link) => (
-                <button key={link} onClick={() => link === "Contact Us" ? setPage("contact") : undefined} className="text-white/45 hover:text-[#4AC9D3] text-sm text-left transition-colors">
-                  {link}
-                </button>
-              ))}
+              {[
+                { label: "Contact Us", action: () => setPage("contact") },
+                { label: "Warranty Claim", href: "https://www.shorehitch.com/pages/contact" },
+                { label: "Shipping Info", href: "https://www.shorehitch.com/policies/shipping-policy" },
+                { label: "Returns", href: "https://www.shorehitch.com/policies/refund-policy" },
+                { label: "FAQs", href: "https://www.shorehitch.com/pages/contact" },
+              ].map(({ label, action, href }) =>
+                href ? (
+                  <a key={label} href={href} target="_top" className="text-white/45 hover:text-[#4AC9D3] text-sm text-left transition-colors">
+                    {label}
+                  </a>
+                ) : (
+                  <button key={label} onClick={action} className="text-white/45 hover:text-[#4AC9D3] text-sm text-left transition-colors">
+                    {label}
+                  </button>
+                )
+              )}
               <button onClick={() => setPage("dealer")} className="text-[#4AC9D3] hover:text-white text-sm text-left font-semibold transition-colors">
                 Become a Dealer →
               </button>
@@ -2658,8 +2676,8 @@ function Footer({ setPage }: { setPage: (p: Page) => void }) {
         <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-white/20 text-xs">
           <span>© 2025 ShoreHitch. All rights reserved. 🇺🇸 Family Owned & Operated — Designed in the USA.</span>
           <div className="flex gap-4">
-            <button className="hover:text-white/40 transition-colors">Privacy Policy</button>
-            <button className="hover:text-white/40 transition-colors">Terms of Service</button>
+            <a href="https://www.shorehitch.com/policies/privacy-policy" target="_top" className="hover:text-white/40 transition-colors">Privacy Policy</a>
+            <a href="https://www.shorehitch.com/policies/terms-of-service" target="_top" className="hover:text-white/40 transition-colors">Terms of Service</a>
           </div>
         </div>
       </div>
@@ -2819,15 +2837,17 @@ function WelcomePopup({ onClose }: { onClose: () => void }) {
 export default function App() {
   const [page, setPage] = useState<Page>("home");
   const [selectedProductId, setSelectedProductId] = useState<number>(1);
-  const [cartItems, setCartItems] = useState<{ product: Product; qty: number }[]>([]);
+  const [cartItems, setCartItems] = useState<{ product: Product; qty: number; color?: string }[]>([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [popupDismissed, setPopupDismissed] = useState(false);
+  const [popupDismissed, setPopupDismissed] = useState(() => sessionStorage.getItem("sh_popup") === "1");
   const [shopifyCartId, setShopifyCartId] = useState<string | null>(null);
+  const shopifyCartIdRef = useRef<string | null>(null);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
-  const [variantMap, setVariantMap] = useState<Record<number, string>>({});
-  const variantMapRef = useRef<Record<number, string>>({});
+  // variantMap: productId → { colorName → variantGid, __default__ → firstVariantGid }
+  const [variantMap, setVariantMap] = useState<Record<number, Record<string, string>>>({});
+  const variantMapRef = useRef<Record<number, Record<string, string>>>({});
 
-  // Fetch first variant ID for each product on mount
+  // Fetch all variants (with color options) for each product on mount
   useEffect(() => {
     const gids = Object.values(SHOPIFY_PRODUCT_GIDS);
     const query = `
@@ -2835,24 +2855,47 @@ export default function App() {
         nodes(ids: $ids) {
           ... on Product {
             id
-            variants(first: 1) { nodes { id } }
+            variants(first: 50) {
+              nodes {
+                id
+                selectedOptions { name value }
+              }
+            }
           }
         }
       }
     `;
     storefrontFetch(query, { ids: gids }).then((data) => {
-      const map: Record<number, string> = {};
-      (data?.data?.nodes ?? []).forEach((node: { id: string; variants: { nodes: { id: string }[] } }) => {
+      const map: Record<number, Record<string, string>> = {};
+      (data?.data?.nodes ?? []).forEach((node: { id: string; variants: { nodes: { id: string; selectedOptions: { name: string; value: string }[] }[] } }) => {
         if (!node) return;
-        const appId = Object.entries(SHOPIFY_PRODUCT_GIDS).find(([, gid]) => gid === node.id)?.[0];
-        if (appId && node.variants?.nodes?.[0]) {
-          map[Number(appId)] = node.variants.nodes[0].id;
-        }
+        const entry = Object.entries(SHOPIFY_PRODUCT_GIDS).find(([, gid]) => gid === node.id);
+        if (!entry) return;
+        const appId = Number(entry[0]);
+        map[appId] = {};
+        node.variants?.nodes?.forEach((v, idx) => {
+          if (idx === 0) map[appId]["__default__"] = v.id;
+          const colorOpt = v.selectedOptions?.find((o) => o.name.toLowerCase() === "color" || o.name.toLowerCase() === "title");
+          if (colorOpt) map[appId][colorOpt.value] = v.id;
+        });
       });
       variantMapRef.current = map;
       setVariantMap(map);
     }).catch(() => {/* non-blocking */});
   }, []);
+
+  // Update browser tab title per page
+  useEffect(() => {
+    const titles: Record<Page, string> = {
+      home: "ShoreHitch — Anchoring Redefined",
+      catalog: "Shop — ShoreHitch",
+      product: `${PRODUCTS.find((p) => p.id === selectedProductId)?.name ?? "Product"} — ShoreHitch`,
+      cart: "Your Cart — ShoreHitch",
+      contact: "Contact — ShoreHitch",
+      dealer: "Become a Dealer — ShoreHitch",
+    };
+    document.title = titles[page] ?? "ShoreHitch";
+  }, [page, selectedProductId]);
 
   // Show popup 4 seconds after load — once per session
   useEffect(() => {
@@ -2864,6 +2907,7 @@ export default function App() {
   function dismissPopup() {
     setShowPopup(false);
     setPopupDismissed(true);
+    sessionStorage.setItem("sh_popup", "1");
   }
 
   function viewProduct(id: number) {
@@ -2871,20 +2915,22 @@ export default function App() {
     setPage("product");
   }
 
-  async function addToCart(product: Product) {
+  async function addToCart(product: Product, color?: string) {
     // Update local cart display immediately
     setCartItems((prev) => {
-      const existing = prev.find((i) => i.product.id === product.id);
-      if (existing) return prev.map((i) => i.product.id === product.id ? { ...i, qty: i.qty + 1 } : i);
-      return [...prev, { product, qty: 1 }];
+      const existing = prev.find((i) => i.product.id === product.id && i.color === color);
+      if (existing) return prev.map((i) => (i.product.id === product.id && i.color === color) ? { ...i, qty: i.qty + 1 } : i);
+      return [...prev, { product, qty: 1, color }];
     });
 
-    const variantId = variantMapRef.current[product.id] ?? variantMap[product.id];
-    if (!variantId) return; // Shopify not available, local cart still works
+    // Resolve correct variant: color-specific first, then default
+    const productVariants = variantMapRef.current[product.id] ?? variantMap[product.id];
+    const variantId = (color && productVariants?.[color]) || productVariants?.["__default__"];
+    if (!variantId) return;
 
     try {
-      if (!shopifyCartId) {
-        // Create cart with this item
+      const currentCartId = shopifyCartIdRef.current;
+      if (!currentCartId) {
         const createRes = await storefrontFetch(`
           mutation cartCreate($lines: [CartLineInput!]!) {
             cartCreate(input: { lines: $lines }) {
@@ -2895,11 +2941,11 @@ export default function App() {
         `, { lines: [{ merchandiseId: variantId, quantity: 1 }] });
         const cart = createRes?.data?.cartCreate?.cart;
         if (cart) {
+          shopifyCartIdRef.current = cart.id;
           setShopifyCartId(cart.id);
           setCheckoutUrl(cart.checkoutUrl);
         }
       } else {
-        // Add to existing cart
         const addRes = await storefrontFetch(`
           mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
             cartLinesAdd(cartId: $cartId, lines: $lines) {
@@ -2907,26 +2953,25 @@ export default function App() {
               userErrors { message }
             }
           }
-        `, { cartId: shopifyCartId, lines: [{ merchandiseId: variantId, quantity: 1 }] });
+        `, { cartId: currentCartId, lines: [{ merchandiseId: variantId, quantity: 1 }] });
         const cart = addRes?.data?.cartLinesAdd?.cart;
         if (cart) setCheckoutUrl(cart.checkoutUrl);
       }
     } catch {/* non-blocking: local cart already updated */}
   }
 
-  function removeFromCart(id: number) {
-    setCartItems((prev) => prev.filter((i) => i.product.id !== id));
+  function removeFromCart(id: number, color?: string) {
+    setCartItems((prev) => prev.filter((i) => !(i.product.id === id && i.color === color)));
   }
 
   function handleCheckout() {
-    // Use window.top to break out of the Shopify iframe and navigate the full tab
     const target = window.top ?? window;
     if (checkoutUrl) {
       target.location.href = checkoutUrl;
     } else {
-      // Fallback: build Shopify cart URL from variant IDs
-      const lines = cartItems.map(({ product, qty }) => {
-        const vid = variantMap[product.id];
+      const lines = cartItems.map(({ product, qty, color }) => {
+        const productVariants = variantMap[product.id];
+        const vid = (color && productVariants?.[color]) || productVariants?.["__default__"];
         if (!vid) return null;
         const numericId = vid.split("/").pop();
         return `${numericId}:${qty}`;
