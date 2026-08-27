@@ -2695,39 +2695,39 @@ function WelcomePopup({ onClose }: { onClose: () => void }) {
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-xl bg-[#0A0A0A] border border-[#4AC9D3]/25 rounded-3xl overflow-hidden shadow-2xl shadow-black/80">
+      <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto bg-[#0A0A0A] border border-[#4AC9D3]/25 rounded-3xl overflow-hidden shadow-2xl shadow-black/80">
         {/* Cyan top bar */}
         <div className="h-1.5 w-full bg-gradient-to-r from-[#0044FE] via-[#4AC9D3] to-[#0044FE]" />
 
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-white/30 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors z-10"
         >
           <IconX className="w-6 h-6" />
         </button>
 
-        <div className="px-10 py-10">
+        <div className="px-8 py-7">
           {/* Logo */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-4">
             <img
               src="/ShoreHitch-03-3.png"
               alt="ShoreHitch — Anchoring Redefined"
-              className="h-28 w-auto"
+              className="h-20 w-auto"
             />
           </div>
 
           {!submitted ? (
             <>
               {/* Pre-submit */}
-              <div className="text-center mb-7">
-                <div className="inline-flex items-center gap-2 bg-[#4AC9D3]/10 border border-[#4AC9D3]/25 rounded-full px-4 py-1.5 mb-4">
+              <div className="text-center mb-5">
+                <div className="inline-flex items-center gap-2 bg-[#4AC9D3]/10 border border-[#4AC9D3]/25 rounded-full px-4 py-1.5 mb-3">
                   <span className="text-[#4AC9D3] text-sm font-bold tracking-widest uppercase">Exclusive Offer</span>
                 </div>
-                <h2 className="font-bold text-white text-4xl tracking-tight mb-3">
+                <h2 className="font-bold text-white text-3xl tracking-tight mb-2">
                   Get 10% Off Your First Order
                 </h2>
-                <p className="text-white/55 text-base leading-relaxed">
+                <p className="text-white/55 text-sm leading-relaxed">
                   Join the ShoreHitch fleet. Unlock your discount code — plus early access to new products and drops.
                 </p>
               </div>
