@@ -18,13 +18,13 @@ const SHOPIFY_PRODUCT_GIDS: Record<number, string> = {
 
 // Product handle ↔ ID mapping — must match Shopify product URL handles exactly
 const PRODUCT_HANDLES: Record<number, string> = {
-  1: "shorehitch-og",
-  2: "baby-shorehitch",
+  1: "shorehitch",
+  2: "baby-hitch-18-12",
   3: "360-anchor-swivel",
   4: "custom-dock-lines-pair",
   5: "shorehook-tether-adjuster",
-  6: "hard-case",
-  7: "shorehitch-bucket-anchor",
+  6: "dry-bag-storage",
+  7: "shorehitch-bucket-pre-order-today",
   8: "custom-engraving",
 };
 const HANDLE_TO_ID: Record<string, number> = Object.fromEntries(
