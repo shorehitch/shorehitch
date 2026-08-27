@@ -2917,6 +2917,7 @@ export default function App() {
       }
     `;
     storefrontFetch(query, { ids: gids }).then((data) => {
+      console.log("[ShoreHitch] Storefront variant response:", JSON.stringify(data?.data?.nodes?.map((n: { id: string; variants: { nodes: { id: string }[] } } | null) => n ? { id: n.id, variantCount: n.variants?.nodes?.length } : null)));
       const map: Record<number, Record<string, string>> = {};
       (data?.data?.nodes ?? []).forEach((node: { id: string; variants: { nodes: { id: string; selectedOptions: { name: string; value: string }[] }[] } }) => {
         if (!node) return;
@@ -2930,6 +2931,7 @@ export default function App() {
           if (colorOpt) map[appId][colorOpt.value] = v.id;
         });
       });
+      console.log("[ShoreHitch] Variant map built:", JSON.stringify(map));
       variantMapRef.current = map;
       setVariantMap(map);
       // If a ?variant= param was in the URL, find its color so cart uses the right variant
@@ -3032,7 +3034,8 @@ export default function App() {
     // Resolve correct variant: color-specific first, then default
     const productVariants = variantMapRef.current[product.id] ?? variantMap[product.id];
     const variantId = (color && productVariants?.[color]) || productVariants?.["__default__"];
-    if (!variantId) return;
+    console.log("[ShoreHitch] addToCart:", product.name, "color:", color, "resolved variantId:", variantId, "map:", JSON.stringify(productVariants));
+    if (!variantId) { console.warn("[ShoreHitch] No variant found — cart not sent to Shopify for", product.name); return; }
 
     try {
       const currentCartId = shopifyCartIdRef.current;
