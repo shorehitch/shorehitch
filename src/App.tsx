@@ -2709,9 +2709,9 @@ function WelcomePopup({ onClose }: { onClose: () => void }) {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-01.png?v=1783443368"
-              alt="ShoreHitch"
-              className="h-24 w-auto brightness-0 invert"
+              src="/ShoreHitch-03-3.png"
+              alt="ShoreHitch — Anchoring Redefined"
+              className="h-28 w-auto"
             />
           </div>
 
