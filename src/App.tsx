@@ -118,9 +118,10 @@ const PRODUCTS: Product[] = [
     originalPrice: 79.99,
     badge: "Essential Add-On",
     media: [
-      { type: "video", src: "https://cdn.shopify.com/videos/c/o/v/b9deff88544d4ca2a996fe289e8ef050.mov" },
-      { type: "video", src: "https://cdn.shopify.com/videos/c/o/v/681ed9a1e32344099428bfccded9b933.mp4" },
-      // { type: "image", src: "/src/imports/your-swivel-image.jpg" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/698074571f68d17cc2037417.png?v=1783102734" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_204053_6e52e1f3-4b2e-4e62-9581-7000ea883dd4_3.png?v=1787845721" },
+      { type: "video", src: "https://cdn.shopify.com/videos/c/o/v/5cb79124da0b47c48840f644f534fa4e.mp4" },
+      { type: "video", src: "https://cdn.shopify.com/videos/c/o/v/6aafb256f2ab47a08e666a4d54774d91.mp4" },
     ],
     tag: "Accessory",
     stars: 5,
