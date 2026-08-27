@@ -1289,7 +1289,7 @@ const PRODUCT_COLORS: Record<number, typeof ALL_COLORS> = {
   2: BABY_COLORS,  // Baby ShoreHitch — 4 only
 };
 
-function ProductPage({ productId, addToCart }: { productId: number; addToCart: (p: Product, color?: string, qty?: number) => void }) {
+function ProductPage({ productId, addToCart }: { productId: number; addToCart: (p: Product, color?: string, qty?: number) => Promise<void> }) {
   const product = PRODUCTS.find((p) => p.id === productId) ?? PRODUCTS[0];
   const isPreOrder = product.id === 7;
   const isEngraving = product.id === 8;
@@ -1348,10 +1348,10 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
 
   const media = product.media;
 
-  function handleAdd() {
-    addToCart(product, selectedColor ?? undefined, qty);
-    if (engravingEnabled) addToCart(PRODUCTS.find((p) => p.id === 8)!, undefined, qty);
-    if (hardCaseEnabled) addToCart(PRODUCTS.find((p) => p.id === 6)!, undefined, qty);
+  async function handleAdd() {
+    await addToCart(product, selectedColor ?? undefined, qty);
+    if (engravingEnabled) await addToCart(PRODUCTS.find((p) => p.id === 8)!, undefined, qty);
+    if (hardCaseEnabled) await addToCart(PRODUCTS.find((p) => p.id === 6)!, undefined, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   }
