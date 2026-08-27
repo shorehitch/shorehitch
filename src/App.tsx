@@ -2081,7 +2081,7 @@ function CartPage({ cart, setPage, removeFromCart, onCheckout }: { cart: { produ
   if (cart.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-24 text-center">
-        <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-02.png?v=1783443368" alt="" className="w-32 h-32 mx-auto mb-4 opacity-30" />
+        <img src="/ShoreHitch-03-3.png" alt="ShoreHitch" className="w-40 h-auto mx-auto mb-4 opacity-60" />
         <h2 className="font-bold text-white text-3xl mb-3 tracking-tight">Your Cart is Empty</h2>
         <p className="text-white/40 mb-8">Discover gear built by boaters, for boaters.</p>
         <button onClick={() => setPage("catalog")} className="bg-[#4AC9D3] text-black font-bold px-8 py-3 rounded-lg">
