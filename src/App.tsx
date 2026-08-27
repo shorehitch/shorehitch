@@ -1289,7 +1289,7 @@ const PRODUCT_COLORS: Record<number, typeof ALL_COLORS> = {
   2: BABY_COLORS,  // Baby ShoreHitch — 4 only
 };
 
-function ProductPage({ productId, addToCart }: { productId: number; addToCart: (p: Product, color?: string) => void }) {
+function ProductPage({ productId, addToCart }: { productId: number; addToCart: (p: Product, color?: string, qty?: number) => void }) {
   const product = PRODUCTS.find((p) => p.id === productId) ?? PRODUCTS[0];
   const isPreOrder = product.id === 7;
   const isEngraving = product.id === 8;
@@ -1349,7 +1349,9 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
   const media = product.media;
 
   function handleAdd() {
-    for (let i = 0; i < qty; i++) addToCart(product, selectedColor ?? undefined);
+    addToCart(product, selectedColor ?? undefined, qty);
+    if (engravingEnabled) addToCart(PRODUCTS.find((p) => p.id === 8)!, undefined, qty);
+    if (hardCaseEnabled) addToCart(PRODUCTS.find((p) => p.id === 6)!, undefined, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   }
@@ -3019,12 +3021,12 @@ export default function App() {
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
-  async function addToCart(product: Product, color?: string) {
+  async function addToCart(product: Product, color?: string, qty: number = 1) {
     // Update local cart display immediately
     setCartItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id && i.color === color);
-      if (existing) return prev.map((i) => (i.product.id === product.id && i.color === color) ? { ...i, qty: i.qty + 1 } : i);
-      return [...prev, { product, qty: 1, color }];
+      if (existing) return prev.map((i) => (i.product.id === product.id && i.color === color) ? { ...i, qty: i.qty + qty } : i);
+      return [...prev, { product, qty, color }];
     });
 
     // Resolve correct variant: color-specific first, then default
@@ -3042,7 +3044,7 @@ export default function App() {
               userErrors { message }
             }
           }
-        `, { lines: [{ merchandiseId: variantId, quantity: 1 }] });
+        `, { lines: [{ merchandiseId: variantId, quantity: qty }] });
         const cart = createRes?.data?.cartCreate?.cart;
         if (cart) {
           shopifyCartIdRef.current = cart.id;
@@ -3057,7 +3059,7 @@ export default function App() {
               userErrors { message }
             }
           }
-        `, { cartId: currentCartId, lines: [{ merchandiseId: variantId, quantity: 1 }] });
+        `, { cartId: currentCartId, lines: [{ merchandiseId: variantId, quantity: qty }] });
         const cart = addRes?.data?.cartLinesAdd?.cart;
         if (cart) setCheckoutUrl(cart.checkoutUrl);
       }
