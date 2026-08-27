@@ -3045,11 +3045,13 @@ export default function App() {
             }
           }
         `, { lines: [{ merchandiseId: variantId, quantity: qty }] });
+        console.log("[ShoreHitch] cartCreate response:", JSON.stringify(createRes?.data?.cartCreate));
         const cart = createRes?.data?.cartCreate?.cart;
         if (cart) {
           shopifyCartIdRef.current = cart.id;
           setShopifyCartId(cart.id);
           setCheckoutUrl(cart.checkoutUrl);
+          console.log("[ShoreHitch] Cart created. ID:", cart.id, "checkoutUrl:", cart.checkoutUrl);
         }
       } else {
         const addRes = await storefrontFetch(`
@@ -3071,8 +3073,10 @@ export default function App() {
   }
 
   function handleCheckout() {
+    console.log("[ShoreHitch] handleCheckout — checkoutUrl:", checkoutUrl, "cartItems:", JSON.stringify(cartItems.map(i => ({ name: i.product.name, qty: i.qty, color: i.color }))));
     const target = window.top ?? window;
     if (checkoutUrl) {
+      console.log("[ShoreHitch] Redirecting to checkoutUrl:", checkoutUrl);
       target.location.href = checkoutUrl;
     } else {
       const lines = cartItems.map(({ product, qty, color }) => {
@@ -3082,6 +3086,7 @@ export default function App() {
         const numericId = vid.split("/").pop();
         return `${numericId}:${qty}`;
       }).filter(Boolean);
+      console.log("[ShoreHitch] No checkoutUrl — using fallback cart URL lines:", lines);
       if (lines.length > 0) {
         target.location.href = `https://${SHOPIFY_DOMAIN}/cart/${lines.join(",")}`;
       }
