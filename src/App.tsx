@@ -167,6 +167,9 @@ const PRODUCTS: Product[] = [
     originalPrice: 59.99,
     media: [
       { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/6980745766e7cafbcee57142.png?v=1783102736" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_042036_2e16c0e0-f9db-41cd-80a3-c12f1aa4e6c6_2.png?v=1787845738" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_003419_8f479eac-2b3e-49e7-a573-6c79bf7ab74e_3.png?v=1787845706" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260129_180858_3eb81f72-0ea5-4f77-9f27-16f792ed8472_2.jpg?v=1787845671" },
     ],
     tag: "Accessory",
     stars: 4.8,
