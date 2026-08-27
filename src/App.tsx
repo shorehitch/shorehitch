@@ -1,4 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+
+// ─── Shopify Storefront API ────────────────────────────────────────────────────
+const SHOPIFY_DOMAIN = "b5h2ta-gg.myshopify.com";
+const SHOPIFY_TOKEN = "a9d45ddae6597544b32573bd7bd13a13";
+
+// Maps app product ID → Shopify product GID (variant fetched at runtime)
+const SHOPIFY_PRODUCT_GIDS: Record<number, string> = {
+  1: "gid://shopify/Product/15117737951598",
+  2: "gid://shopify/Product/15117738180974",
+  3: "gid://shopify/Product/15117738344814",
+  4: "gid://shopify/Product/15117738541422",
+  5: "gid://shopify/Product/15117738738030",
+  6: "gid://shopify/Product/15117738869102",
+  7: "gid://shopify/Product/15117739229550",
+  8: "gid://shopify/Product/15117739393390",
+};
+
+async function storefrontFetch(query: string, variables?: Record<string, unknown>) {
+  const res = await fetch(`https://${SHOPIFY_DOMAIN}/api/2024-10/graphql.json`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Shopify-Storefront-Access-Token": SHOPIFY_TOKEN,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+  return res.json();
+}
 
 type Page = "home" | "catalog" | "product" | "cart" | "contact" | "dealer";
 
@@ -20,6 +48,7 @@ interface Product {
   description: string;
   features: string[];
   inStock: boolean;
+  shopifyVariantId?: string;
 }
 
 const PRODUCTS: Product[] = [
@@ -1998,7 +2027,7 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
 }
 
 // ─── Cart Page ────────────────────────────────────────────────────────────────
-function CartPage({ cart, setPage, removeFromCart }: { cart: { product: Product; qty: number }[]; setPage: (p: Page) => void; removeFromCart: (id: number) => void }) {
+function CartPage({ cart, setPage, removeFromCart, onCheckout }: { cart: { product: Product; qty: number }[]; setPage: (p: Page) => void; removeFromCart: (id: number) => void; onCheckout: () => void }) {
   const subtotal = cart.reduce((s, item) => s + item.product.price * item.qty, 0);
   const shipping = subtotal >= 599 ? 0 : 14.99;
   const total = subtotal + shipping;
@@ -2081,7 +2110,7 @@ function CartPage({ cart, setPage, removeFromCart }: { cart: { product: Product;
             <span>Total</span><span>${total.toFixed(2)}</span>
           </div>
 
-          <button className="w-full bg-[#4AC9D3] hover:bg-[#6dd8e1] text-black font-bold py-4 rounded-lg cta-pulse transition-colors text-base">
+          <button onClick={onCheckout} className="w-full bg-[#4AC9D3] hover:bg-[#6dd8e1] text-black font-bold py-4 rounded-lg cta-pulse transition-colors text-base">
             Proceed to Checkout
           </button>
 
@@ -2791,6 +2820,37 @@ export default function App() {
   const [cartItems, setCartItems] = useState<{ product: Product; qty: number }[]>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [popupDismissed, setPopupDismissed] = useState(false);
+  const [shopifyCartId, setShopifyCartId] = useState<string | null>(null);
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+  const [variantMap, setVariantMap] = useState<Record<number, string>>({});
+  const variantMapRef = useRef<Record<number, string>>({});
+
+  // Fetch first variant ID for each product on mount
+  useEffect(() => {
+    const gids = Object.values(SHOPIFY_PRODUCT_GIDS);
+    const query = `
+      query getVariants($ids: [ID!]!) {
+        nodes(ids: $ids) {
+          ... on Product {
+            id
+            variants(first: 1) { nodes { id } }
+          }
+        }
+      }
+    `;
+    storefrontFetch(query, { ids: gids }).then((data) => {
+      const map: Record<number, string> = {};
+      (data?.data?.nodes ?? []).forEach((node: { id: string; variants: { nodes: { id: string }[] } }) => {
+        if (!node) return;
+        const appId = Object.entries(SHOPIFY_PRODUCT_GIDS).find(([, gid]) => gid === node.id)?.[0];
+        if (appId && node.variants?.nodes?.[0]) {
+          map[Number(appId)] = node.variants.nodes[0].id;
+        }
+      });
+      variantMapRef.current = map;
+      setVariantMap(map);
+    }).catch(() => {/* non-blocking */});
+  }, []);
 
   // Show popup 4 seconds after load — once per session
   useEffect(() => {
@@ -2809,16 +2869,68 @@ export default function App() {
     setPage("product");
   }
 
-  function addToCart(product: Product) {
+  async function addToCart(product: Product) {
+    // Update local cart display immediately
     setCartItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) return prev.map((i) => i.product.id === product.id ? { ...i, qty: i.qty + 1 } : i);
       return [...prev, { product, qty: 1 }];
     });
+
+    const variantId = variantMapRef.current[product.id] ?? variantMap[product.id];
+    if (!variantId) return; // Shopify not available, local cart still works
+
+    try {
+      if (!shopifyCartId) {
+        // Create cart with this item
+        const createRes = await storefrontFetch(`
+          mutation cartCreate($lines: [CartLineInput!]!) {
+            cartCreate(input: { lines: $lines }) {
+              cart { id checkoutUrl }
+              userErrors { message }
+            }
+          }
+        `, { lines: [{ merchandiseId: variantId, quantity: 1 }] });
+        const cart = createRes?.data?.cartCreate?.cart;
+        if (cart) {
+          setShopifyCartId(cart.id);
+          setCheckoutUrl(cart.checkoutUrl);
+        }
+      } else {
+        // Add to existing cart
+        const addRes = await storefrontFetch(`
+          mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+            cartLinesAdd(cartId: $cartId, lines: $lines) {
+              cart { id checkoutUrl }
+              userErrors { message }
+            }
+          }
+        `, { cartId: shopifyCartId, lines: [{ merchandiseId: variantId, quantity: 1 }] });
+        const cart = addRes?.data?.cartLinesAdd?.cart;
+        if (cart) setCheckoutUrl(cart.checkoutUrl);
+      }
+    } catch {/* non-blocking: local cart already updated */}
   }
 
   function removeFromCart(id: number) {
     setCartItems((prev) => prev.filter((i) => i.product.id !== id));
+  }
+
+  function handleCheckout() {
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+    } else {
+      // Fallback: build Shopify cart URL from variant IDs
+      const lines = cartItems.map(({ product, qty }) => {
+        const vid = variantMap[product.id];
+        if (!vid) return null;
+        const numericId = vid.split("/").pop();
+        return `${numericId}:${qty}`;
+      }).filter(Boolean);
+      if (lines.length > 0) {
+        window.location.href = `https://${SHOPIFY_DOMAIN}/cart/${lines.join(",")}`;
+      }
+    }
   }
 
   const cartCount = cartItems.reduce((s, i) => s + i.qty, 0);
@@ -2831,7 +2943,7 @@ export default function App() {
       {page === "home" && <HomePage setPage={setPage} viewProduct={viewProduct} addToCart={addToCart} />}
       {page === "catalog" && <CatalogPage setPage={setPage} viewProduct={viewProduct} addToCart={addToCart} />}
       {page === "product" && <ProductPage productId={selectedProductId} addToCart={addToCart} />}
-      {page === "cart" && <CartPage cart={cartItems} setPage={setPage} removeFromCart={removeFromCart} />}
+      {page === "cart" && <CartPage cart={cartItems} setPage={setPage} removeFromCart={removeFromCart} onCheckout={handleCheckout} />}
       {page === "contact" && <ContactPage setPage={setPage} />}
       {page === "dealer" && <DealerPage setPage={setPage} />}
     </div>
