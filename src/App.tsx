@@ -2898,40 +2898,37 @@ export default function App() {
   const [variantMap, setVariantMap] = useState<Record<number, Record<string, string>>>({});
   const variantMapRef = useRef<Record<number, Record<string, string>>>({});
 
-  // Fetch all variants (with color options) for each product on mount
+  // Fetch all variants by handle — guaranteed to match the right Shopify product
   useEffect(() => {
-    const gids = Object.values(SHOPIFY_PRODUCT_GIDS);
-    const query = `
-      query getVariants($ids: [ID!]!) {
-        nodes(ids: $ids) {
-          ... on Product {
-            id
-            variants(first: 50) {
-              nodes {
-                id
-                selectedOptions { name value }
-              }
+    const entries = Object.entries(PRODUCT_HANDLES) as [string, string][];
+    // Build a query with one alias per product handle
+    const query = `query getVariantsByHandle {
+      ${entries.map(([appId, handle]) => `
+        p${appId}: product(handle: "${handle}") {
+          id
+          variants(first: 50) {
+            nodes {
+              id
+              selectedOptions { name value }
             }
           }
         }
-      }
-    `;
-    storefrontFetch(query, { ids: gids }).then((data) => {
-      console.log("[ShoreHitch] Storefront variant response:", JSON.stringify(data?.data?.nodes?.map((n: { id: string; variants: { nodes: { id: string }[] } } | null) => n ? { id: n.id, variantCount: n.variants?.nodes?.length } : null)));
+      `).join("")}
+    }`;
+    storefrontFetch(query).then((data) => {
       const map: Record<number, Record<string, string>> = {};
-      (data?.data?.nodes ?? []).forEach((node: { id: string; variants: { nodes: { id: string; selectedOptions: { name: string; value: string }[] }[] } }) => {
-        if (!node) return;
-        const entry = Object.entries(SHOPIFY_PRODUCT_GIDS).find(([, gid]) => gid === node.id);
-        if (!entry) return;
-        const appId = Number(entry[0]);
+      entries.forEach(([appIdStr, handle]) => {
+        const appId = Number(appIdStr);
+        const node = data?.data?.[`p${appId}`];
+        if (!node) { console.warn("[ShoreHitch] No Storefront data for handle:", handle); return; }
         map[appId] = {};
-        node.variants?.nodes?.forEach((v, idx) => {
+        node.variants?.nodes?.forEach((v: { id: string; selectedOptions: { name: string; value: string }[] }, idx: number) => {
           if (idx === 0) map[appId]["__default__"] = v.id;
-          const colorOpt = v.selectedOptions?.find((o) => o.name.toLowerCase() === "color" || o.name.toLowerCase() === "title");
+          const colorOpt = v.selectedOptions?.find((o: { name: string }) => o.name.toLowerCase() === "color" || o.name.toLowerCase() === "title");
           if (colorOpt) map[appId][colorOpt.value] = v.id;
         });
+        console.log("[ShoreHitch] handle:", handle, "→ default variant:", map[appId]["__default__"]);
       });
-      console.log("[ShoreHitch] Variant map built:", JSON.stringify(map));
       variantMapRef.current = map;
       setVariantMap(map);
       // If a ?variant= param was in the URL, find its color so cart uses the right variant
