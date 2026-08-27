@@ -282,6 +282,25 @@ const PRODUCTS: Product[] = [
     inStock: true,
   },
   {
+    id: 9,
+    name: "Soft Top Handle",
+    price: 20.99,
+    originalPrice: 20.99,
+    badge: "Add-On",
+    media: [
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/693cc25bab2594c80a9de00d.png?v=1783102739" },
+    ],
+    tag: "Accessory",
+    stars: 5,
+    reviews: 0,
+    description: "Soft top handle deck accessory for your ShoreHitch system.",
+    features: [
+      "Compatible with ShoreHitch OG and Baby ShoreHitch",
+      "🇺🇸 Designed in USA",
+    ],
+    inStock: true,
+  },
+  {
     id: 8,
     name: "Custom Engraving",
     price: 59.99,
@@ -304,21 +323,6 @@ const PRODUCTS: Product[] = [
       "Ships with your order",
       "🇺🇸 Designed in USA",
     ],
-    inStock: true,
-  },
-  {
-    id: 9,
-    name: "Soft Top Handle",
-    price: 20.99,
-    originalPrice: 20.99,
-    media: [
-      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/693cc25bab2594c80a9de00d.png?v=1783102739" },
-    ],
-    tag: "Accessory",
-    stars: 5,
-    reviews: 0,
-    description: "Soft top handle for your ShoreHitch.",
-    features: ["Compatible with ShoreHitch OG and Baby ShoreHitch", "🇺🇸 Designed in USA"],
     inStock: true,
   },
 ];
@@ -1367,8 +1371,8 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
   async function handleAdd() {
     await addToCart(product, selectedColor ?? undefined, qty);
     if (engravingEnabled) await addToCart(PRODUCTS.find((p) => p.id === 8)!, undefined, qty);
-    if (hardCaseEnabled) await addToCart(PRODUCTS.find((p) => p.id === 6)!, undefined, qty);
     if (softTopEnabled) await addToCart(PRODUCTS.find((p) => p.id === 9)!, undefined, qty);
+    if (hardCaseEnabled) await addToCart(PRODUCTS.find((p) => p.id === 6)!, undefined, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   }
