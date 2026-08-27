@@ -2882,6 +2882,9 @@ export default function App() {
   const initial = parseUrl();
   const [page, setPageState] = useState<Page>(initial.page);
   const [selectedProductId, setSelectedProductId] = useState<number>(initial.productId ?? 1);
+  const selectedProductIdRef = useRef(initial.productId ?? 1);
+  // Keep ref in sync so setPage("product") can read current id without stale closure
+  useEffect(() => { selectedProductIdRef.current = selectedProductId; }, [selectedProductId]);
   const pendingVariantId = useRef<string | undefined>(initial.variantId);
   const [cartItems, setCartItems] = useState<{ product: Product; qty: number; color?: string }[]>([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -2984,33 +2987,33 @@ export default function App() {
     sessionStorage.setItem("sh_popup", "1");
   }
 
-  // SPA navigation — updates URL and page state together
-  function navigate(newPage: Page, productId?: number) {
-    const id = productId ?? selectedProductId;
+  function viewProduct(id: number) {
+    const url = `/products/${PRODUCT_HANDLES[id] ?? String(id)}`;
+    history.pushState({ page: "product", productId: id }, "", url);
+    selectedProductIdRef.current = id;
+    setSelectedProductId(id);
+    setPageState("product");
+  }
+
+  function setPage(p: Page) {
     const urls: Record<Page, string> = {
       home: "/",
       catalog: "/catalog",
-      product: `/products/${PRODUCT_HANDLES[id] ?? String(id)}`,
+      product: `/products/${PRODUCT_HANDLES[selectedProductIdRef.current] ?? "shorehitch-og"}`,
       cart: "/cart",
       contact: "/contact",
       dealer: "/dealer",
     };
-    history.pushState({ page: newPage, productId: id }, "", urls[newPage]);
-    setPageState(newPage);
-    if (productId !== undefined) setSelectedProductId(productId);
+    history.pushState({ page: p }, "", urls[p]);
+    setPageState(p);
   }
-
-  // Wrap setPage so all child components drive real URL changes
-  function setPage(p: Page) { navigate(p); }
-
-  function viewProduct(id: number) { navigate("product", id); }
 
   // Handle browser Back / Forward
   useEffect(() => {
     const onPop = () => {
       const { page: p, productId: pid } = parseUrl();
       setPageState(p);
-      if (pid !== undefined) setSelectedProductId(pid);
+      if (pid !== undefined) { setSelectedProductId(pid); selectedProductIdRef.current = pid; }
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
