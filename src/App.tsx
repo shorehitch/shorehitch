@@ -2898,36 +2898,37 @@ export default function App() {
   const [variantMap, setVariantMap] = useState<Record<number, Record<string, string>>>({});
   const variantMapRef = useRef<Record<number, Record<string, string>>>({});
 
-  // Fetch all variants by handle — guaranteed to match the right Shopify product
+  // Fetch all variants by product GID
   useEffect(() => {
-    const entries = Object.entries(PRODUCT_HANDLES) as [string, string][];
-    // Build a query with one alias per product handle
-    const query = `query getVariantsByHandle {
-      ${entries.map(([appId, handle]) => `
-        p${appId}: product(handle: "${handle}") {
-          id
-          variants(first: 50) {
-            nodes {
-              id
-              selectedOptions { name value }
+    const gids = Object.values(SHOPIFY_PRODUCT_GIDS);
+    const query = `
+      query getVariants($ids: [ID!]!) {
+        nodes(ids: $ids) {
+          ... on Product {
+            id
+            variants(first: 50) {
+              nodes {
+                id
+                selectedOptions { name value }
+              }
             }
           }
         }
-      `).join("")}
-    }`;
-    storefrontFetch(query).then((data) => {
+      }
+    `;
+    storefrontFetch(query, { ids: gids }).then((data) => {
       const map: Record<number, Record<string, string>> = {};
-      entries.forEach(([appIdStr, handle]) => {
-        const appId = Number(appIdStr);
-        const node = data?.data?.[`p${appId}`];
-        if (!node) { console.warn("[ShoreHitch] No Storefront data for handle:", handle); return; }
+      (data?.data?.nodes ?? []).forEach((node: { id: string; variants: { nodes: { id: string; selectedOptions: { name: string; value: string }[] }[] } }) => {
+        if (!node) return;
+        const entry = Object.entries(SHOPIFY_PRODUCT_GIDS).find(([, gid]) => gid === node.id);
+        if (!entry) return;
+        const appId = Number(entry[0]);
         map[appId] = {};
-        node.variants?.nodes?.forEach((v: { id: string; selectedOptions: { name: string; value: string }[] }, idx: number) => {
+        node.variants?.nodes?.forEach((v, idx) => {
           if (idx === 0) map[appId]["__default__"] = v.id;
-          const colorOpt = v.selectedOptions?.find((o: { name: string }) => o.name.toLowerCase() === "color" || o.name.toLowerCase() === "title");
+          const colorOpt = v.selectedOptions?.find((o) => o.name.toLowerCase() === "color" || o.name.toLowerCase() === "title");
           if (colorOpt) map[appId][colorOpt.value] = v.id;
         });
-        console.log("[ShoreHitch] handle:", handle, "→ default variant:", map[appId]["__default__"]);
       });
       variantMapRef.current = map;
       setVariantMap(map);
@@ -3031,8 +3032,7 @@ export default function App() {
     // Resolve correct variant: color-specific first, then default
     const productVariants = variantMapRef.current[product.id] ?? variantMap[product.id];
     const variantId = (color && productVariants?.[color]) || productVariants?.["__default__"];
-    console.log("[ShoreHitch] addToCart:", product.name, "color:", color, "resolved variantId:", variantId, "map:", JSON.stringify(productVariants));
-    if (!variantId) { console.warn("[ShoreHitch] No variant found — cart not sent to Shopify for", product.name); return; }
+    if (!variantId) return;
 
     try {
       const currentCartId = shopifyCartIdRef.current;
@@ -3045,13 +3045,11 @@ export default function App() {
             }
           }
         `, { lines: [{ merchandiseId: variantId, quantity: qty }] });
-        console.log("[ShoreHitch] cartCreate response:", JSON.stringify(createRes?.data?.cartCreate));
         const cart = createRes?.data?.cartCreate?.cart;
         if (cart) {
           shopifyCartIdRef.current = cart.id;
           setShopifyCartId(cart.id);
           setCheckoutUrl(cart.checkoutUrl);
-          console.log("[ShoreHitch] Cart created. ID:", cart.id, "checkoutUrl:", cart.checkoutUrl);
         }
       } else {
         const addRes = await storefrontFetch(`
@@ -3073,10 +3071,8 @@ export default function App() {
   }
 
   function handleCheckout() {
-    console.log("[ShoreHitch] handleCheckout — checkoutUrl:", checkoutUrl, "cartItems:", JSON.stringify(cartItems.map(i => ({ name: i.product.name, qty: i.qty, color: i.color }))));
     const target = window.top ?? window;
     if (checkoutUrl) {
-      console.log("[ShoreHitch] Redirecting to checkoutUrl:", checkoutUrl);
       target.location.href = checkoutUrl;
     } else {
       const lines = cartItems.map(({ product, qty, color }) => {
@@ -3086,7 +3082,6 @@ export default function App() {
         const numericId = vid.split("/").pop();
         return `${numericId}:${qty}`;
       }).filter(Boolean);
-      console.log("[ShoreHitch] No checkoutUrl — using fallback cart URL lines:", lines);
       if (lines.length > 0) {
         target.location.href = `https://${SHOPIFY_DOMAIN}/cart/${lines.join(",")}`;
       }
