@@ -166,8 +166,6 @@ const PRODUCTS: Product[] = [
     originalPrice: 59.99,
     media: [
       { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/6980745766e7cafbcee57142.png?v=1783102736" },
-      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/6980745766e7cafbcee57142.png?v=1783102736" },
-      // { type: "video", src: "/src/imports/your-shorehook-video.mp4" },
     ],
     tag: "Accessory",
     stars: 4.8,
@@ -2164,7 +2162,7 @@ function DealerPage({ setPage }: { setPage: (p: Page) => void }) {
       {/* Hero — dock background */}
       <div className="relative overflow-hidden">
         <img
-          src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/PNG_image-B3879C54A52B-1.png?v=1785518718"
+          src="/dealer-hero.jpg"
           alt="ShoreHitch dealer"
           className="absolute inset-0 w-full h-full object-cover opacity-40"
         />
