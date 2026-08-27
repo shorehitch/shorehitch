@@ -30,17 +30,17 @@ const PRODUCTS: Product[] = [
     originalPrice: 399.99,
     badge: "Best Seller",
     media: [
-      { type: "image", src: "/src/imports/Blue_-_Logo_Close_Up__2_.png" },
-      { type: "image", src: "/src/imports/Black_-_Logo_Close_Up_2.PNG" },
-      { type: "image", src: "/src/imports/Red_-_Logo_Close_Up_2.PNG" },
-      { type: "image", src: "/src/imports/Green_-_Logo_Close_Up_2.PNG" },
-      { type: "image", src: "/src/imports/Purple_-_Logo_Close_Up_4.PNG" },
-      { type: "image", src: "/src/imports/CD74EEEB-5431-4F95-8BB2-FC4C253E5C74.JPG" },
-      { type: "image", src: "/src/imports/new_arrival.png.jpeg" },
-      { type: "image", src: "/src/imports/shorehitch-2024_Tie_off-6935.jpg" },
-      { type: "image", src: "/src/imports/Shore_Hitch_in_vibrant_teal_water_4.JPEG" },
-      { type: "image", src: "/src/imports/Dynamic_yellow_splash_with_Shore_Hitch_anchor_2.JPEG" },
-      { type: "image", src: "/src/imports/Shore_Hitch_with_chocolate_splashes_4.JPEG" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Blue_Shorehitch.png?v=1787847178" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Black_Shorehitch.jpg?v=1787846954" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Red_Shorehitch.png?v=1787847502" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Green_shorehitch.png?v=1787847521" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Purple-Logo.jpg?v=1787847715" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/821DC6A6-DB87-4EAE-92D1-C51540E32FA4.jpg?v=1787844821" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/new_arrival_png.jpg?v=1787844781" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/shorehitch-2025-tom-leigh--37.jpg?v=1783627028" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Shore_Hitch_in_vibrant_teal_water.png?v=1785512458" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Dynamic_yellow_splash_with_Shore_Hitch_anchor.jpg?v=1785513923" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Shore_Hitch_with_chocolate_splashes.png?v=1785512477" },
     ],
     tag: "Flagship Anchor",
     stars: 5,
@@ -62,10 +62,10 @@ const PRODUCTS: Product[] = [
     originalPrice: 349.99,
     badge: "Jet Ski Ready",
     media: [
-      { type: "image", src: "/src/imports/White_-_Front.png" },
-      { type: "image", src: "/src/imports/Blue_-_Logo_Close_Up__2_.png" },
-      { type: "image", src: "/src/imports/Black_-_Logo_Close_Up_2-1.PNG" },
-      { type: "image", src: "/src/imports/Red_-_Logo_Close_Up_2-1.PNG" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/White_-_Logo_Close_Up_2.png?v=1787845710" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Blue_Shorehitch.png?v=1787847178" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Black_Shorehitch.jpg?v=1787846954" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Red_Shorehitch.png?v=1787847502" },
       // { type: "video", src: "/src/imports/your-baby-hitch-video.mp4" },
     ],
     tag: "PWC Anchor",
@@ -89,8 +89,8 @@ const PRODUCTS: Product[] = [
     originalPrice: 79.99,
     badge: "Essential Add-On",
     media: [
-      { type: "video", src: "/src/imports/hf_20260201_225355_ac53bb23-6201-4120-bea1-04a1d1e0f49e_2.MP4" },
-      { type: "video", src: "/src/imports/hf_20260201_231215_3ffb06c7-020a-4134-a470-2f8475ae88e7_2.MP4" },
+      { type: "video", src: "https://cdn.shopify.com/videos/c/o/v/b9deff88544d4ca2a996fe289e8ef050.mov" },
+      { type: "video", src: "https://cdn.shopify.com/videos/c/o/v/681ed9a1e32344099428bfccded9b933.mp4" },
       // { type: "image", src: "/src/imports/your-swivel-image.jpg" },
     ],
     tag: "Accessory",
@@ -113,7 +113,7 @@ const PRODUCTS: Product[] = [
     originalPrice: 189.99,
     badge: "Custom Engraved",
     media: [
-      { type: "image", src: "/src/imports/Black_Rope_Carabiner.jpg" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/6969862802ec93f027e0a328.png?v=1783102737" },
       // { type: "video", src: "/src/imports/your-dock-lines-video.mp4" },
     ],
     tag: "Dock Lines",
@@ -136,8 +136,8 @@ const PRODUCTS: Product[] = [
     price: 49.99,
     originalPrice: 59.99,
     media: [
-      { type: "image", src: "/src/imports/hf_20260201_003817_bcd926b1-3ece-445a-aa35-7913e1b76bd8_3-1.PNG" },
-      { type: "image", src: "/src/imports/ShoreHook_Tether_Red-_Ratio_9-16JPG.JPG" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/6980745766e7cafbcee57142.png?v=1783102736" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/6980745766e7cafbcee57142.png?v=1783102736" },
       // { type: "video", src: "/src/imports/your-shorehook-video.mp4" },
     ],
     tag: "Accessory",
@@ -159,7 +159,7 @@ const PRODUCTS: Product[] = [
     price: 79.99,
     originalPrice: 89.99,
     media: [
-      { type: "image", src: "/src/imports/ChatGPT_Image_Aug_20__2026__10_05_54_AM.png" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/698074571fd82749a7a2a7ff.png?v=1783102733" },
     ],
     tag: "Storage",
     stars: 5,
@@ -181,11 +181,11 @@ const PRODUCTS: Product[] = [
     originalPrice: 999.99,
     badge: "PRE-ORDER",
     media: [
-      { type: "image", src: "/src/imports/hf_20260202_000624_ec4a2448-a882-4a52-9fe5-d866947da597_3-1.PNG" },
-      { type: "image", src: "/src/imports/hf_20260201_225635_1dd60d40-2020-4e07-9f72-b20972ec2441_3-1.PNG" },
-      { type: "image", src: "/src/imports/hf_20260202_005819_5012b37a-2249-4771-a264-7b3300abbd74__1__3.PNG" },
-      { type: "image", src: "/src/imports/hf_20260201_204053_6e52e1f3-4b2e-4e62-9581-7000ea883dd4_2.PNG" },
-      { type: "image", src: "/src/imports/hf_20260201_005724_bb7ef5b1-269d-45ed-96f6-01a96d32158f_3.PNG" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260202_000624_ec4a2448-a882-4a52-9fe5-d866947da597_4.png?v=1787845811" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_225635_1dd60d40-2020-4e07-9f72-b20972ec2441_5.jpg?v=1787845762" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260202_005819_5012b37a-2249-4771-a264-7b3300abbd74_1_4.png?v=1787845816" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_204053_6e52e1f3-4b2e-4e62-9581-7000ea883dd4_3.png?v=1787845721" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_005724_bb7ef5b1-269d-45ed-96f6-01a96d32158f_4.png?v=1787845720" },
     ],
     tag: "Pre-Order",
     stars: 5,
@@ -574,7 +574,7 @@ function AnnouncementBar() {
       <div className="flex ticker-track whitespace-nowrap items-center">
         {doubled.map((item, i) => (
           <span key={i} className="inline-flex items-center gap-2 px-6">
-            <img src="/src/imports/ShoreHitch-07-1.png" alt="ShoreHitch" className="h-8 w-auto flex-shrink-0" />
+            <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-02.png?v=1783443368" alt="ShoreHitch" className="h-8 w-auto flex-shrink-0" />
             <span>{item}</span>
             <span className="text-black/20 ml-4">·</span>
           </span>
@@ -607,7 +607,7 @@ function Nav({ page, setPage, cartCount }: { page: Page; setPage: (p: Page) => v
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <button onClick={() => setPage("home")} className="flex items-center">
           <img
-            src="/src/imports/ShoreHitch-03-2.png"
+            src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-03.png?v=1783102739"
             alt="ShoreHitch — Anchoring Redefined"
             className="h-48 w-auto"
           />
@@ -678,7 +678,7 @@ function HomePage({ setPage, viewProduct, addToCart }: { setPage: (p: Page) => v
       {/* Fixed video background — pins behind all sections */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <video
-          src="/src/imports/b_roll_clip__5_.m4v"
+          src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/b_roll_clip_5.m4v?v=1787844877"
           autoPlay
           muted
           loop
@@ -791,7 +791,7 @@ function HomePage({ setPage, viewProduct, addToCart }: { setPage: (p: Page) => v
         <div className="grid md:grid-cols-2">
           {/* Left — old way */}
           <div className="relative">
-            <img src="/src/imports/shorehitch-2024_Tie_off-6935.jpg" alt="Old anchor methods" className="w-full h-72 md:h-96 object-cover grayscale opacity-60" />
+            <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/shorehitch-2025-tom-leigh--37.jpg?v=1783627028" alt="Old anchor methods" className="w-full h-72 md:h-96 object-cover grayscale opacity-60" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/80" />
             <div className="absolute bottom-0 left-0 right-0 p-8">
               <h3 className="font-bold text-white text-2xl md:text-3xl tracking-tight mb-5">Leave Spikes &amp; Augers Behind.</h3>
@@ -813,7 +813,7 @@ function HomePage({ setPage, viewProduct, addToCart }: { setPage: (p: Page) => v
 
           {/* Right — ShoreHitch */}
           <div className="relative bg-black">
-            <img src="/src/imports/Blue_-_Logo_Close_Up__2_.png" alt="ShoreHitch" className="w-full h-72 md:h-96 object-cover opacity-80" />
+            <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Blue_Shorehitch.png?v=1787847178" alt="ShoreHitch" className="w-full h-72 md:h-96 object-cover opacity-80" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/85" />
             <div className="absolute bottom-0 left-0 right-0 p-8">
               <h3 className="font-bold text-white text-2xl md:text-3xl tracking-tight mb-5">Embrace the Future.</h3>
@@ -859,7 +859,7 @@ function HomePage({ setPage, viewProduct, addToCart }: { setPage: (p: Page) => v
             {/* ShoreHitch */}
             <div className="flex flex-col items-center bg-[#4AC9D3]/10 border-2 border-[#4AC9D3]/40 rounded-xl overflow-hidden">
               <div className="w-full bg-black flex items-center justify-center p-5 flex-1">
-                <img src="/src/imports/ShoreHitch-03-2.png" alt="ShoreHitch" className="w-full h-auto object-contain" />
+                <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-03.png?v=1783102739" alt="ShoreHitch" className="w-full h-auto object-contain" />
               </div>
               <span className="text-[#4AC9D3] text-xs font-bold tracking-widest uppercase py-3">ShoreHitch</span>
             </div>
@@ -1076,7 +1076,7 @@ function HomePage({ setPage, viewProduct, addToCart }: { setPage: (p: Page) => v
         <div className="absolute inset-0 bg-gradient-to-br from-[#0044FE]/20 via-black to-[#4AC9D3]/10" />
         <div className="absolute inset-0 border-y border-[#4AC9D3]/15" />
         <div className="relative max-w-3xl mx-auto px-6 text-center">
-          <img src="/src/imports/ShoreHitch-05.png" alt="" className="w-24 h-24 mx-auto mb-4 opacity-80" />
+          <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-02.png?v=1783443368" alt="" className="w-24 h-24 mx-auto mb-4 opacity-80" />
           <h2 className="font-bold text-white text-3xl md:text-4xl mb-3 tracking-tight">
             Join the ShoreHitch Fleet
           </h2>
@@ -1840,13 +1840,13 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
           <div className="grid md:grid-cols-2 gap-6 mb-10">
             <div className="flex flex-col gap-3">
               <div className="rounded-xl overflow-hidden bg-[#111] border border-white/8">
-                <img src="/src/imports/2EE8DE07-DC92-4D54-8807-AE2DB3EBD54B-2.PNG" alt="Bucket Anchor front detail" className="w-full h-auto object-contain" />
+                <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260202_010759_e366c6fb-3e0e-41f9-9848-9e924d095160_2.jpg?v=1787845742" alt="Bucket Anchor front detail" className="w-full h-auto object-contain" />
               </div>
               <p className="text-white/40 text-xs text-center tracking-wide">Front Profile — 316 Stainless Mirror Finish</p>
             </div>
             <div className="flex flex-col gap-3">
               <div className="rounded-xl overflow-hidden bg-[#111] border border-white/8">
-                <img src="/src/imports/180__pivot_handle_in_focus_2-2.JPEG" alt="Pivot handle detail" className="w-full h-auto object-contain" />
+                <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_225635_1dd60d40-2020-4e07-9f72-b20972ec2441_5.jpg?v=1787845762" alt="Pivot handle detail" className="w-full h-auto object-contain" />
               </div>
               <p className="text-white/40 text-xs text-center tracking-wide">180° Pivot Handle — Precision Engineering</p>
             </div>
@@ -1875,8 +1875,8 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
             <div className="grid md:grid-cols-2 gap-6 items-center">
               {/* Baby Hitch photos */}
               <div className="hidden md:flex items-center justify-center gap-3 order-2 md:order-none">
-                <img src="/src/imports/7740C8BA-0192-49AD-B6D8-7DAA70E45FE1.PNG" alt="Baby ShoreHitch" className="max-h-80 w-auto object-contain rounded-xl" />
-                <img src="/src/imports/00852E52-F824-4A41-8548-5AE33530A3CC.PNG" alt="Baby ShoreHitch" className="max-h-80 w-auto object-contain rounded-xl" />
+                <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/7740C8BA-0192-49AD-B6D8-7DAA70E45FE1_2.png?v=1787845142" alt="Baby ShoreHitch" className="max-h-80 w-auto object-contain rounded-xl" />
+                <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/00852E52-F824-4A41-8548-5AE33530A3CC_2.png?v=1787845143" alt="Baby ShoreHitch" className="max-h-80 w-auto object-contain rounded-xl" />
               </div>
               {/* 2x2 feature boxes */}
               <div className="grid grid-cols-2 gap-4 order-1 md:col-span-1 md:order-none" style={{gridColumn: "1 / -1"}}>
@@ -1904,7 +1904,7 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
           <div className="mt-16 border-t border-white/8 pt-16">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="relative rounded-xl overflow-hidden bg-[#111] aspect-[3/4]">
-                <img src="/src/imports/shorehitch-2024_Tie_off-6935.jpg" alt="ShoreHitch in use" className="w-full h-full object-cover" />
+                <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/shorehitch-2025-tom-leigh--37.jpg?v=1783627028" alt="ShoreHitch in use" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               </div>
               <div>
@@ -2006,7 +2006,7 @@ function CartPage({ cart, setPage, removeFromCart }: { cart: { product: Product;
   if (cart.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-24 text-center">
-        <img src="/src/imports/ShoreHitch-05.png" alt="" className="w-32 h-32 mx-auto mb-4 opacity-30" />
+        <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-02.png?v=1783443368" alt="" className="w-32 h-32 mx-auto mb-4 opacity-30" />
         <h2 className="font-bold text-white text-3xl mb-3 tracking-tight">Your Cart is Empty</h2>
         <p className="text-white/40 mb-8">Discover gear built by boaters, for boaters.</p>
         <button onClick={() => setPage("catalog")} className="bg-[#4AC9D3] text-black font-bold px-8 py-3 rounded-lg">
@@ -2135,7 +2135,7 @@ function DealerPage({ setPage }: { setPage: (p: Page) => void }) {
       {/* Hero — dock background */}
       <div className="relative overflow-hidden">
         <img
-          src="/src/imports/Howard_Front_End.png.jpeg"
+          src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/PNG_image-B3879C54A52B-1.png?v=1785518718"
           alt="ShoreHitch dealer"
           className="absolute inset-0 w-full h-full object-cover opacity-40"
         />
@@ -2177,7 +2177,7 @@ function DealerPage({ setPage }: { setPage: (p: Page) => void }) {
       <div className="relative bg-[#1a1e24] border-y border-white/8 py-20 overflow-hidden">
         {/* Watermark S */}
         <div className="absolute right-0 top-0 bottom-0 flex items-center opacity-5 pointer-events-none select-none">
-          <img src="/src/imports/ShoreHitch-05.png" alt="" className="w-96 h-96" />
+          <img src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-02.png?v=1783443368" alt="" className="w-96 h-96" />
         </div>
         <div className="max-w-7xl mx-auto px-6 relative">
           <div className="text-center mb-14">
@@ -2580,7 +2580,7 @@ function Footer({ setPage }: { setPage: (p: Page) => void }) {
           <div className="md:col-span-2">
             <div className="mb-5">
               <img
-                src="/src/imports/ShoreHitch-07-1.png"
+                src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-02.png?v=1783443368"
                 alt="ShoreHitch — Anchoring Redefined"
                 className="h-24 w-auto"
               />
@@ -2680,7 +2680,7 @@ function WelcomePopup({ onClose }: { onClose: () => void }) {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src="/src/imports/ShoreHitch-07-1.png"
+              src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-02.png?v=1783443368"
               alt="ShoreHitch"
               className="h-24 w-auto"
             />
