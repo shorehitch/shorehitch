@@ -16,6 +16,51 @@ const SHOPIFY_PRODUCT_GIDS: Record<number, string> = {
   8: "gid://shopify/Product/15117739393390",
 };
 
+// Product handle ↔ ID mapping — must match Shopify product URL handles exactly
+const PRODUCT_HANDLES: Record<number, string> = {
+  1: "shorehitch-og",
+  2: "baby-shorehitch",
+  3: "360-anchor-swivel",
+  4: "custom-dock-lines-pair",
+  5: "shorehook-tether-adjuster",
+  6: "hard-case",
+  7: "shorehitch-bucket-anchor",
+  8: "custom-engraving",
+};
+const HANDLE_TO_ID: Record<string, number> = Object.fromEntries(
+  Object.entries(PRODUCT_HANDLES).map(([id, h]) => [h, Number(id)])
+);
+
+function parseUrl(): { page: Page; productId?: number; variantId?: string } {
+  const path = window.location.pathname;
+  const params = new URLSearchParams(window.location.search);
+  const variantId = params.get("variant") ?? undefined;
+  const m = path.match(/^\/products\/([^/]+)/);
+  if (m) {
+    const id = HANDLE_TO_ID[m[1]];
+    if (id) return { page: "product", productId: id, variantId };
+  }
+  if (path.startsWith("/catalog") || path.startsWith("/shop")) return { page: "catalog" };
+  if (path.startsWith("/cart")) return { page: "cart" };
+  if (path.startsWith("/contact")) return { page: "contact" };
+  if (path.startsWith("/dealer")) return { page: "dealer" };
+  return { page: "home" };
+}
+
+function updateMeta(title: string, description: string, image: string, url: string) {
+  document.title = title;
+  const set = (sel: string, attr: string, val: string) => {
+    let el = document.querySelector(sel) as HTMLMetaElement | null;
+    if (!el) { el = document.createElement("meta"); if (attr === "property") el.setAttribute("property", sel.match(/\[property="([^"]+)"\]/)?.[1] ?? ""); else el.name = sel.match(/\[name="([^"]+)"\]/)?.[1] ?? ""; document.head.appendChild(el); }
+    el.content = val;
+  };
+  set('meta[property="og:title"]', "property", title);
+  set('meta[property="og:description"]', "property", description);
+  set('meta[property="og:image"]', "property", image);
+  set('meta[property="og:url"]', "property", url);
+  set('meta[name="description"]', "name", description);
+}
+
 async function storefrontFetch(query: string, variables?: Record<string, unknown>) {
   const res = await fetch(`https://${SHOPIFY_DOMAIN}/api/2024-10/graphql.json`, {
     method: "POST",
@@ -1138,9 +1183,11 @@ function HomePage({ setPage, viewProduct, addToCart }: { setPage: (p: Page) => v
 // ─── Product Card ─────────────────────────────────────────────────────────────
 function ProductCard({ product, onView, onAdd }: { product: Product; onView: (id: number) => void; onAdd: () => void }) {
   const savings = product.originalPrice - product.price;
+  const href = `/products/${PRODUCT_HANDLES[product.id] ?? String(product.id)}`;
+  function handleNav(e: React.MouseEvent) { e.preventDefault(); onView(product.id); }
   return (
     <div className="product-card bg-[#0A0A0A] border border-white/8 rounded-xl overflow-hidden flex flex-col group">
-      <div className="relative aspect-square bg-[#111] overflow-hidden cursor-pointer" onClick={() => onView(product.id)}>
+      <a href={href} onClick={handleNav} className="relative aspect-square bg-[#111] overflow-hidden block">
         <MediaThumb item={product.media[0]} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100" />
         {product.badge && (
           <div className={`absolute top-3 left-3 text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded ${
@@ -1158,23 +1205,20 @@ function ProductCard({ product, onView, onAdd }: { product: Product; onView: (id
         )}
         {/* CTA overlay */}
         <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          <button
-            onClick={() => onView(product.id)}
-            className="w-full bg-[#4AC9D3] hover:bg-[#6dd8e1] text-black font-bold text-sm py-3 transition-colors"
-          >
+          <span className="block w-full bg-[#4AC9D3] hover:bg-[#6dd8e1] text-black font-bold text-sm py-3 text-center transition-colors">
             {product.badge === "PRE-ORDER"
               ? "Pre-Order Now →"
               : [1, 2, 8].includes(product.id)
               ? "Customize & Buy →"
               : "View & Add to Cart →"}
-          </button>
+          </span>
         </div>
-      </div>
+      </a>
       <div className="p-4 flex flex-col gap-2 flex-1">
         <div className="text-[#4AC9D3]/70 text-[10px] font-bold tracking-widest uppercase">{product.tag}</div>
-        <button onClick={() => onView(product.id)} className="text-white font-semibold text-sm leading-snug text-left hover:text-[#4AC9D3] transition-colors">
+        <a href={href} onClick={handleNav} className="text-white font-semibold text-sm leading-snug text-left hover:text-[#4AC9D3] transition-colors">
           {product.name}
-        </button>
+        </a>
         <div className="flex items-center gap-1.5">
           <Stars count={product.stars} />
           <span className="text-white/35 text-xs">({product.reviews})</span>
@@ -2835,8 +2879,10 @@ function WelcomePopup({ onClose }: { onClose: () => void }) {
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [page, setPage] = useState<Page>("home");
-  const [selectedProductId, setSelectedProductId] = useState<number>(1);
+  const initial = parseUrl();
+  const [page, setPageState] = useState<Page>(initial.page);
+  const [selectedProductId, setSelectedProductId] = useState<number>(initial.productId ?? 1);
+  const pendingVariantId = useRef<string | undefined>(initial.variantId);
   const [cartItems, setCartItems] = useState<{ product: Product; qty: number; color?: string }[]>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [popupDismissed, setPopupDismissed] = useState(() => sessionStorage.getItem("sh_popup") === "1");
@@ -2881,20 +2927,48 @@ export default function App() {
       });
       variantMapRef.current = map;
       setVariantMap(map);
+      // If a ?variant= param was in the URL, find its color so cart uses the right variant
+      const vid = pendingVariantId.current;
+      if (vid) {
+        for (const [appId, colorMap] of Object.entries(map)) {
+          for (const [color, variantGid] of Object.entries(colorMap)) {
+            if (color !== "__default__" && variantGid.includes(vid)) {
+              // Store as pending selection — ProductPage will pick this up
+              pendingVariantId.current = color;
+              void appId;
+              break;
+            }
+          }
+        }
+      }
     }).catch(() => {/* non-blocking */});
   }, []);
 
-  // Update browser tab title per page
+  // Update meta tags per page/product
   useEffect(() => {
-    const titles: Record<Page, string> = {
-      home: "ShoreHitch — Anchoring Redefined",
-      catalog: "Shop — ShoreHitch",
-      product: `${PRODUCTS.find((p) => p.id === selectedProductId)?.name ?? "Product"} — ShoreHitch`,
-      cart: "Your Cart — ShoreHitch",
-      contact: "Contact — ShoreHitch",
-      dealer: "Become a Dealer — ShoreHitch",
-    };
-    document.title = titles[page] ?? "ShoreHitch";
+    const product = page === "product" ? PRODUCTS.find((p) => p.id === selectedProductId) : null;
+    const base = "https://shorehitch.vercel.app";
+    if (product) {
+      const handle = PRODUCT_HANDLES[product.id];
+      updateMeta(
+        `${product.name} — ShoreHitch`,
+        product.description,
+        product.media[0]?.src ?? "",
+        `${base}/products/${handle}`
+      );
+    } else {
+      const metas: Record<Page, [string, string, string]> = {
+        home: ["ShoreHitch — Anchoring Redefined", "America's first custom anchor system. Precision-machined stainless steel. Lifetime warranty.", "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Blue_Shorehitch.png?v=1787847178"],
+        catalog: ["Shop — ShoreHitch", "Browse the full ShoreHitch collection.", "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Blue_Shorehitch.png?v=1787847178"],
+        cart: ["Your Cart — ShoreHitch", "Review your ShoreHitch order.", "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Blue_Shorehitch.png?v=1787847178"],
+        contact: ["Contact — ShoreHitch", "Get in touch with the ShoreHitch team.", "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Blue_Shorehitch.png?v=1787847178"],
+        dealer: ["Become a Dealer — ShoreHitch", "Join the ShoreHitch dealer network.", "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Blue_Shorehitch.png?v=1787847178"],
+        product: ["ShoreHitch — Anchoring Redefined", "", ""],
+      };
+      const [title, desc, img] = metas[page];
+      const urls: Record<Page, string> = { home: base, catalog: `${base}/catalog`, cart: `${base}/cart`, contact: `${base}/contact`, dealer: `${base}/dealer`, product: base };
+      updateMeta(title, desc, img, urls[page]);
+    }
   }, [page, selectedProductId]);
 
   // Show popup 4 seconds after load — once per session
@@ -2910,10 +2984,37 @@ export default function App() {
     sessionStorage.setItem("sh_popup", "1");
   }
 
-  function viewProduct(id: number) {
-    setSelectedProductId(id);
-    setPage("product");
+  // SPA navigation — updates URL and page state together
+  function navigate(newPage: Page, productId?: number) {
+    const id = productId ?? selectedProductId;
+    const urls: Record<Page, string> = {
+      home: "/",
+      catalog: "/catalog",
+      product: `/products/${PRODUCT_HANDLES[id] ?? String(id)}`,
+      cart: "/cart",
+      contact: "/contact",
+      dealer: "/dealer",
+    };
+    history.pushState({ page: newPage, productId: id }, "", urls[newPage]);
+    setPageState(newPage);
+    if (productId !== undefined) setSelectedProductId(productId);
   }
+
+  // Wrap setPage so all child components drive real URL changes
+  function setPage(p: Page) { navigate(p); }
+
+  function viewProduct(id: number) { navigate("product", id); }
+
+  // Handle browser Back / Forward
+  useEffect(() => {
+    const onPop = () => {
+      const { page: p, productId: pid } = parseUrl();
+      setPageState(p);
+      if (pid !== undefined) setSelectedProductId(pid);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   async function addToCart(product: Product, color?: string) {
     // Update local cart display immediately
