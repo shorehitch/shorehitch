@@ -2917,8 +2917,10 @@ export default function App() {
   }
 
   function handleCheckout() {
+    // Use window.top to break out of the Shopify iframe and navigate the full tab
+    const target = window.top ?? window;
     if (checkoutUrl) {
-      window.location.href = checkoutUrl;
+      target.location.href = checkoutUrl;
     } else {
       // Fallback: build Shopify cart URL from variant IDs
       const lines = cartItems.map(({ product, qty }) => {
@@ -2928,7 +2930,7 @@ export default function App() {
         return `${numericId}:${qty}`;
       }).filter(Boolean);
       if (lines.length > 0) {
-        window.location.href = `https://${SHOPIFY_DOMAIN}/cart/${lines.join(",")}`;
+        target.location.href = `https://${SHOPIFY_DOMAIN}/cart/${lines.join(",")}`;
       }
     }
   }
