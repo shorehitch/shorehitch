@@ -212,7 +212,7 @@ const PRODUCTS: Product[] = [
     badge: "Made to Order",
     media: [
       { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/IMG_1200_4.jpg?v=1787845291" },
-      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/shorehitch-2024-tom-leigh-8315.jpg?v=1783102878" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/IMG_1199_4.jpg?v=1787845292" },
       { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/shorehitch-2024-tom-leigh-8278.jpg?v=1783105014" },
     ],
     tag: "Personalization",
