@@ -2898,14 +2898,14 @@ export default function App() {
   const [variantMap, setVariantMap] = useState<Record<number, Record<string, string>>>({});
   const variantMapRef = useRef<Record<number, Record<string, string>>>({});
 
-  // Fetch all variants by product GID
+  // Fetch all products from Storefront API and match by handle
   useEffect(() => {
-    const gids = Object.values(SHOPIFY_PRODUCT_GIDS);
     const query = `
-      query getVariants($ids: [ID!]!) {
-        nodes(ids: $ids) {
-          ... on Product {
+      query getAllProducts {
+        products(first: 50) {
+          nodes {
             id
+            handle
             variants(first: 50) {
               nodes {
                 id
@@ -2916,15 +2916,15 @@ export default function App() {
         }
       }
     `;
-    storefrontFetch(query, { ids: gids }).then((data) => {
+    storefrontFetch(query).then((data) => {
+      const allProducts: { id: string; handle: string; variants: { nodes: { id: string; selectedOptions: { name: string; value: string }[] }[] } }[] = data?.data?.products?.nodes ?? [];
       const map: Record<number, Record<string, string>> = {};
-      (data?.data?.nodes ?? []).forEach((node: { id: string; variants: { nodes: { id: string; selectedOptions: { name: string; value: string }[] }[] } }) => {
+      Object.entries(PRODUCT_HANDLES).forEach(([appIdStr, handle]) => {
+        const appId = Number(appIdStr);
+        const node = allProducts.find((p) => p.handle === handle);
         if (!node) return;
-        const entry = Object.entries(SHOPIFY_PRODUCT_GIDS).find(([, gid]) => gid === node.id);
-        if (!entry) return;
-        const appId = Number(entry[0]);
         map[appId] = {};
-        node.variants?.nodes?.forEach((v, idx) => {
+        node.variants.nodes.forEach((v, idx) => {
           if (idx === 0) map[appId]["__default__"] = v.id;
           const colorOpt = v.selectedOptions?.find((o) => o.name.toLowerCase() === "color" || o.name.toLowerCase() === "title");
           if (colorOpt) map[appId][colorOpt.value] = v.id;
