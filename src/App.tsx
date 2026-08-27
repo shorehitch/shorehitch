@@ -187,7 +187,7 @@ const PRODUCTS: Product[] = [
     price: 79.99,
     originalPrice: 89.99,
     media: [
-      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/698074571fd82749a7a2a7ff.png?v=1783102733" },
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/IMG_3503.jpg?v=1787855328" },
     ],
     tag: "Storage",
     stars: 5,
