@@ -325,6 +325,21 @@ const PRODUCTS: Product[] = [
     ],
     inStock: true,
   },
+  {
+    id: 9,
+    name: "Soft Top Handle",
+    price: 20.99,
+    originalPrice: 20.99,
+    media: [
+      { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/693cc25bab2594c80a9de00d.png?v=1783102739" },
+    ],
+    tag: "Accessory",
+    stars: 5,
+    reviews: 0,
+    description: "Soft top handle for your ShoreHitch.",
+    features: ["Compatible with ShoreHitch OG and Baby ShoreHitch", "🇺🇸 Designed in USA"],
+    inStock: true,
+  },
 ];
 
 const REVIEWS = [
@@ -1373,6 +1388,7 @@ function ProductPage({ productId, addToCart }: { productId: number; addToCart: (
     if (engravingEnabled) await addToCart(PRODUCTS.find((p) => p.id === 8)!, undefined, qty);
     if (softTopEnabled) await addToCart(PRODUCTS.find((p) => p.id === 9)!, undefined, qty);
     if (hardCaseEnabled) await addToCart(PRODUCTS.find((p) => p.id === 6)!, undefined, qty);
+    if (softTopEnabled) await addToCart(PRODUCTS.find((p) => p.id === 9)!, undefined, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   }
@@ -2227,9 +2243,36 @@ function DealerPage({ setPage }: { setPage: (p: Page) => void }) {
     notes: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
+    const messageBody = [
+      `DEALER INQUIRY`,
+      `Contact Name: ${form.contactName}`,
+      `Business Name: ${form.businessName}`,
+      `Business Type: ${form.businessType}`,
+      `Location: ${form.location}`,
+      `Phone: ${form.phone}`,
+      `Notes: ${form.notes}`,
+    ].join("\n");
+    const body = new URLSearchParams({
+      "form_type": "contact",
+      "utf8": "✓",
+      "contact[name]": form.contactName,
+      "contact[email]": form.email,
+      "contact[body]": messageBody,
+    });
+    try {
+      await fetch("https://www.shorehitch.com/contact", {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+      });
+    } catch { /* non-blocking */ }
+    setLoading(false);
     setSubmitted(true);
   }
 
@@ -2502,8 +2545,8 @@ function DealerPage({ setPage }: { setPage: (p: Page) => void }) {
               />
             </div>
 
-            <button type="submit" className="w-full bg-[#4AC9D3] hover:bg-[#6dd8e1] text-black font-bold py-4 rounded-xl text-sm tracking-widest uppercase transition-colors cta-pulse mt-2">
-              Submit My Dealer Info Sheet
+            <button type="submit" disabled={loading} className="w-full bg-[#4AC9D3] hover:bg-[#6dd8e1] disabled:opacity-60 text-black font-bold py-4 rounded-xl text-sm tracking-widest uppercase transition-colors cta-pulse mt-2">
+              {loading ? "Submitting..." : "Submit My Dealer Info Sheet"}
             </button>
 
             <p className="text-white/25 text-xs text-center">All applications are subject to review and approval. Submitting does not guarantee a dealership. Expect a response within 2 business days.</p>
@@ -2518,9 +2561,27 @@ function DealerPage({ setPage }: { setPage: (p: Page) => void }) {
 function ContactPage({ setPage }: { setPage: (p: Page) => void }) {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
+    const body = new URLSearchParams({
+      "form_type": "contact",
+      "utf8": "✓",
+      "contact[name]": form.name,
+      "contact[email]": form.email,
+      "contact[body]": `Subject: ${form.subject}\n\n${form.message}`,
+    });
+    try {
+      await fetch("https://www.shorehitch.com/contact", {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+      });
+    } catch { /* non-blocking */ }
+    setLoading(false);
     setSent(true);
   }
 
@@ -2613,8 +2674,8 @@ function ContactPage({ setPage }: { setPage: (p: Page) => void }) {
                   value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
                   className="bg-[#0A0A0A] border border-white/10 focus:border-[#4AC9D3] text-white placeholder-white/25 text-sm px-4 py-3 rounded-xl outline-none transition-colors resize-none"
                 />
-                <button type="submit" className="bg-[#4AC9D3] hover:bg-[#6dd8e1] text-black font-bold py-3.5 rounded-xl transition-colors cta-pulse">
-                  Send Message
+                <button type="submit" disabled={loading} className="bg-[#4AC9D3] hover:bg-[#6dd8e1] disabled:opacity-60 text-black font-bold py-3.5 rounded-xl transition-colors cta-pulse">
+                  {loading ? "Sending..." : "Send Message"}
                 </button>
               </form>
             )}
@@ -2757,10 +2818,33 @@ function WelcomePopup({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.email.trim()) return;
+    setLoading(true);
+    const [firstName, ...rest] = form.name.trim().split(" ");
+    const lastName = rest.join(" ");
+    try {
+      await storefrontFetch(`
+        mutation customerCreate($input: CustomerCreateInput!) {
+          customerCreate(input: $input) {
+            customer { id email }
+            customerUserErrors { message }
+          }
+        }
+      `, {
+        input: {
+          firstName: firstName || "",
+          lastName: lastName || "",
+          email: form.email.trim(),
+          phone: form.phone.trim() || undefined,
+          acceptsMarketing: true,
+        }
+      });
+    } catch { /* non-blocking */ }
+    setLoading(false);
     setSubmitted(true);
   }
 
@@ -2843,9 +2927,10 @@ function WelcomePopup({ onClose }: { onClose: () => void }) {
                 />
                 <button
                   type="submit"
-                  className="w-full bg-[#4AC9D3] hover:bg-[#6dd8e1] text-black font-bold py-4 rounded-xl text-base tracking-wide transition-colors cta-pulse mt-1"
+                  disabled={loading}
+                  className="w-full bg-[#4AC9D3] hover:bg-[#6dd8e1] disabled:opacity-60 text-black font-bold py-4 rounded-xl text-base tracking-wide transition-colors cta-pulse mt-1"
                 >
-                  Unlock My 10% Discount →
+                  {loading ? "Saving..." : "Unlock My 10% Discount →"}
                 </button>
               </form>
 
