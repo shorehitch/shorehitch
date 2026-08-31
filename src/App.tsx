@@ -2607,11 +2607,11 @@ function ContactPage({ setPage }: { setPage: (p: Page) => void }) {
           <div className="flex flex-col gap-8">
             <div>
               <div className="text-[#4AC9D3] text-[10px] font-bold tracking-widest uppercase mb-3">Phone</div>
-              <a href="tel:+14803826402" className="flex items-center gap-3 text-white font-semibold text-lg hover:text-[#4AC9D3] transition-colors">
+              <a href="tel:+13104672450" className="flex items-center gap-3 text-white font-semibold text-lg hover:text-[#4AC9D3] transition-colors">
                 <svg className="w-5 h-5 text-[#4AC9D3] flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.5 5.5l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/>
                 </svg>
-                +1 480-382-6402
+                +1 310-467-2450
               </a>
               <div className="rule-cyan mt-4" />
             </div>
