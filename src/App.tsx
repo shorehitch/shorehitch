@@ -810,8 +810,8 @@ function HomePage({ setPage, viewProduct, addToCart }: { setPage: (p: Page) => v
                 <span className="text-[#4AC9D3] text-xs font-semibold tracking-[0.25em] uppercase">America's #1 Custom Anchor System</span>
               </div>
               <h1 className="font-extrabold text-white leading-[0.92] tracking-tight mb-5" style={{ fontSize: "clamp(40px, 6vw, 84px)" }}>
-                The Last Shore Anchor<br />
-                <span className="cyan-shimmer">You'll Ever Need.</span>
+                The Last Anchor<br />
+                <span className="cyan-shimmer">You Will Ever Need.</span>
               </h1>
               <p className="text-white/75 text-lg leading-relaxed mb-5 max-w-lg">
                 Set in seconds. Holds all day. Built in America.
