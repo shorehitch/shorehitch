@@ -30,10 +30,14 @@ async function writeCart(lines: CartLineInput[], savedCartId: string | null) {
 }
 
 export default function ProductPurchase({
+  productId,
+  productName,
   variants,
   enableEngraving = false,
   engravingVariantId,
 }: {
+  productId: string;
+  productName: string;
   variants: Variant[];
   enableEngraving?: boolean;
   engravingVariantId?: string | null;
@@ -47,6 +51,18 @@ export default function ProductPurchase({
 
   const selected = variants.find((variant) => variant.id === variantId) || firstAvailable;
   if (!selected) return <p className="text-sm text-white/50">This product is not currently available.</p>;
+
+  function chooseVariant(id: string) {
+    setVariantId(id);
+    const variant = variants.find((item) => item.id === id);
+    if (variant) {
+      trackCommerceEvent("select_item", {
+        currency: variant.price.currencyCode,
+        value: Number(variant.price.amount),
+        items: [{ item_id: productId, item_name: productName, item_variant: variant.title, price: Number(variant.price.amount), quantity: 1 }],
+      });
+    }
+  }
 
   async function addToCart() {
     if (!selected.availableForSale || status === "adding") return;
@@ -67,9 +83,9 @@ export default function ProductPurchase({
         currency: selected.price.currencyCode,
         value: Number(selected.price.amount) * quantity,
         items: [{
-          item_id: selected.id,
-          item_name: selected.title,
-          item_variant: selected.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(", "),
+          item_id: productId,
+          item_name: productName,
+          item_variant: selected.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(", ") || selected.title,
           price: Number(selected.price.amount),
           quantity,
         }],
@@ -88,7 +104,7 @@ export default function ProductPurchase({
       {variants.length > 1 && (
         <label className="block">
           <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-white/55">Choose option</span>
-          <select value={variantId} onChange={(event) => setVariantId(event.target.value)} className="w-full rounded-lg border border-white/15 bg-[#0A0A0A] px-4 py-3 text-sm text-white outline-none focus:border-[#4AC9D3]">
+          <select value={variantId} onChange={(event) => chooseVariant(event.target.value)} className="w-full rounded-lg border border-white/15 bg-[#0A0A0A] px-4 py-3 text-sm text-white outline-none focus:border-[#4AC9D3]">
             {variants.map((variant) => <option key={variant.id} value={variant.id} disabled={!variant.availableForSale}>{variant.title}{variant.availableForSale ? "" : " — Sold out"}</option>)}
           </select>
         </label>
