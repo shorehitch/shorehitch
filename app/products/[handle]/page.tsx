@@ -45,6 +45,8 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   const minimum = product.priceRange.minVariantPrice;
   const maximum = product.priceRange.maxVariantPrice;
   const hasRange = minimum.amount !== maximum.amount;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shorehitch.com";
+  const productUrl = `${siteUrl}/products/${product.handle}`;
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -57,13 +59,24 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
       priceCurrency: variant.price.currencyCode,
       price: variant.price.amount,
       availability: variant.availableForSale ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://shorehitch.com"}/products/${product.handle}`,
+      url: productUrl,
     })),
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Shop", item: `${siteUrl}/shop` },
+      { "@type": "ListItem", position: 3, name: product.title, item: productUrl },
+    ],
   };
 
   return (
     <SiteShell>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c") }} />
       <section className="mx-auto grid max-w-7xl gap-10 px-5 py-10 md:grid-cols-[1.05fr_0.95fr] md:px-8 md:py-16 lg:gap-16">
         <div>
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0A0A0A]">
