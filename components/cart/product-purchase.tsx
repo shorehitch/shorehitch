@@ -10,6 +10,24 @@ type Variant = {
   price: { amount: string; currencyCode: string };
 };
 
+type CartLineInput = { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] };
+
+async function writeCart(lines: CartLineInput[], savedCartId: string | null) {
+  const request = (body: object) => fetch("/api/cart", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (savedCartId) {
+    const existing = await request({ operation: "add", cartId: savedCartId, lines });
+    if (existing.ok) return existing;
+    localStorage.removeItem("sh_shopify_cart_id");
+  }
+
+  return request({ operation: "create", lines });
+}
+
 export default function ProductPurchase({
   variants,
   enableEngraving = false,
@@ -33,31 +51,19 @@ export default function ProductPurchase({
     if (!selected.availableForSale || status === "adding") return;
     setStatus("adding");
     try {
-      const lines: { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }[] = [
-        { merchandiseId: selected.id, quantity },
-      ];
+      const lines: CartLineInput[] = [{ merchandiseId: selected.id, quantity }];
 
       if (enableEngraving && engravingEnabled && engravingVariantId && engravingText.trim()) {
-        lines.push({
-          merchandiseId: engravingVariantId,
-          quantity,
-          attributes: [{ key: "Engraving Text", value: engravingText.trim() }],
-        });
+        lines.push({ merchandiseId: engravingVariantId, quantity, attributes: [{ key: "Engraving Text", value: engravingText.trim() }] });
       }
 
-      const savedCartId = localStorage.getItem("sh_shopify_cart_id");
-      const response = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(savedCartId
-          ? { operation: "add", cartId: savedCartId, lines }
-          : { operation: "create", lines }),
-      });
+      const response = await writeCart(lines, localStorage.getItem("sh_shopify_cart_id"));
       if (!response.ok) throw new Error("Unable to update cart");
       const payload = await response.json();
       if (!payload?.cart?.id) throw new Error("Shopify did not return a cart");
       localStorage.setItem("sh_shopify_cart_id", payload.cart.id);
       setStatus("added");
+      window.dispatchEvent(new CustomEvent("shorehitch:cart-updated", { detail: { totalQuantity: payload.cart.totalQuantity } }));
       window.setTimeout(() => setStatus("idle"), 2200);
     } catch (error) {
       console.error(error);
@@ -71,40 +77,23 @@ export default function ProductPurchase({
         <label className="block">
           <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-white/55">Choose option</span>
           <select value={variantId} onChange={(event) => setVariantId(event.target.value)} className="w-full rounded-lg border border-white/15 bg-[#0A0A0A] px-4 py-3 text-sm text-white outline-none focus:border-[#4AC9D3]">
-            {variants.map((variant) => (
-              <option key={variant.id} value={variant.id} disabled={!variant.availableForSale}>
-                {variant.title}{variant.availableForSale ? "" : " — Sold out"}
-              </option>
-            ))}
+            {variants.map((variant) => <option key={variant.id} value={variant.id} disabled={!variant.availableForSale}>{variant.title}{variant.availableForSale ? "" : " — Sold out"}</option>)}
           </select>
         </label>
       )}
 
       {enableEngraving && engravingVariantId && (
         <div className="rounded-xl border border-[#4AC9D3]/25 bg-[#4AC9D3]/5 p-4">
-          <label className="flex cursor-pointer items-center gap-3">
-            <input type="checkbox" checked={engravingEnabled} onChange={(event) => setEngravingEnabled(event.target.checked)} className="h-4 w-4 accent-[#4AC9D3]" />
-            <span className="text-sm font-bold text-white">Add custom engraving</span>
-          </label>
-          {engravingEnabled && (
-            <div className="mt-4">
-              <input value={engravingText} onChange={(event) => setEngravingText(event.target.value.slice(0, 60))} placeholder="Boat name or custom text" className="w-full rounded-lg border border-white/15 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/25 focus:border-[#4AC9D3]" />
-              <div className="mt-2 text-right text-[11px] text-white/35">{engravingText.length}/60</div>
-            </div>
-          )}
+          <label className="flex cursor-pointer items-center gap-3"><input type="checkbox" checked={engravingEnabled} onChange={(event) => setEngravingEnabled(event.target.checked)} className="h-4 w-4 accent-[#4AC9D3]" /><span className="text-sm font-bold text-white">Add custom engraving</span></label>
+          {engravingEnabled && <div className="mt-4"><input value={engravingText} onChange={(event) => setEngravingText(event.target.value.slice(0, 60))} placeholder="Boat name or custom text" className="w-full rounded-lg border border-white/15 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/25 focus:border-[#4AC9D3]" /><div className="mt-2 text-right text-[11px] text-white/35">{engravingText.length}/60</div></div>}
         </div>
       )}
 
       <div className="flex gap-3">
-        <div className="flex items-center rounded-lg border border-white/15 bg-[#0A0A0A]">
-          <button aria-label="Decrease quantity" onClick={() => setQuantity((value) => Math.max(1, value - 1))} className="px-4 py-4 text-white/60 hover:text-white">−</button>
-          <span className="min-w-8 text-center text-sm font-bold">{quantity}</span>
-          <button aria-label="Increase quantity" onClick={() => setQuantity((value) => Math.min(10, value + 1))} className="px-4 py-4 text-white/60 hover:text-white">+</button>
-        </div>
-        <button onClick={addToCart} disabled={!selected.availableForSale || status === "adding" || (engravingEnabled && !engravingText.trim())} className="flex-1 rounded-lg bg-[#4AC9D3] px-6 py-4 text-sm font-black uppercase tracking-wider text-black transition hover:bg-[#6DD8E1] disabled:cursor-not-allowed disabled:opacity-45">
-          {status === "adding" ? "Adding…" : status === "added" ? "Added to Cart ✓" : "Add to Cart"}
-        </button>
+        <div className="flex items-center rounded-lg border border-white/15 bg-[#0A0A0A]"><button aria-label="Decrease quantity" onClick={() => setQuantity((value) => Math.max(1, value - 1))} className="px-4 py-4 text-white/60 hover:text-white">−</button><span className="min-w-8 text-center text-sm font-bold">{quantity}</span><button aria-label="Increase quantity" onClick={() => setQuantity((value) => Math.min(10, value + 1))} className="px-4 py-4 text-white/60 hover:text-white">+</button></div>
+        <button onClick={addToCart} disabled={!selected.availableForSale || status === "adding" || (engravingEnabled && !engravingText.trim())} className="flex-1 rounded-lg bg-[#4AC9D3] px-6 py-4 text-sm font-black uppercase tracking-wider text-black transition hover:bg-[#6DD8E1] disabled:cursor-not-allowed disabled:opacity-45">{status === "adding" ? "Adding…" : status === "added" ? "Added to Cart ✓" : "Add to Cart"}</button>
       </div>
+      {status === "added" && <a href="/cart" className="inline-block text-sm font-bold text-[#4AC9D3]">View cart →</a>}
       {status === "error" && <p className="text-sm text-red-300">We couldn’t update the cart. Please try again.</p>}
     </div>
   );
