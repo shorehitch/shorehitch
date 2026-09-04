@@ -31,6 +31,7 @@ export function trackCommerceEvent(name: string, payload: CommerceEvent = {}) {
 
   const metaMap: Record<string, string> = {
     view_item: "ViewContent",
+    select_item: "ViewContent",
     add_to_cart: "AddToCart",
     begin_checkout: "InitiateCheckout",
     search: "Search",
