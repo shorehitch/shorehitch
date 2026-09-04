@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Analytics from "../components/analytics/analytics";
+import OrganizationJsonLd from "../components/seo/organization-jsonld";
 import "../src/index.css";
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
+        <OrganizationJsonLd />
         {children}
         <Analytics />
       </body>
