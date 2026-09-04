@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { trackCommerceEvent } from "@/lib/analytics/events";
 
 type Variant = {
   id: string;
@@ -62,6 +63,17 @@ export default function ProductPurchase({
       const payload = await response.json();
       if (!payload?.cart?.id) throw new Error("Shopify did not return a cart");
       localStorage.setItem("sh_shopify_cart_id", payload.cart.id);
+      trackCommerceEvent("add_to_cart", {
+        currency: selected.price.currencyCode,
+        value: Number(selected.price.amount) * quantity,
+        items: [{
+          item_id: selected.id,
+          item_name: selected.title,
+          item_variant: selected.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(", "),
+          price: Number(selected.price.amount),
+          quantity,
+        }],
+      });
       setStatus("added");
       window.dispatchEvent(new CustomEvent("shorehitch:cart-updated", { detail: { totalQuantity: payload.cart.totalQuantity } }));
       window.setTimeout(() => setStatus("idle"), 2200);
