@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { trackCommerceEvent } from "@/lib/analytics/events";
 
 type Product = {
   id: string;
@@ -33,6 +34,7 @@ export default function SearchClient() {
       const payload = response.ok ? await response.json() : { products: [] };
       setProducts(payload.products || []);
       setSearched(true);
+      trackCommerceEvent("search", { search_term: q });
     } finally {
       setLoading(false);
     }
