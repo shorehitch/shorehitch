@@ -809,12 +809,12 @@ function HomePage({ setPage, viewProduct, addToCart }: { setPage: (p: Page) => v
                 <div className="w-8 h-px bg-[#4AC9D3]" />
                 <span className="text-[#4AC9D3] text-xs font-semibold tracking-[0.25em] uppercase">America's #1 Custom Anchor System</span>
               </div>
-              <h1 className="font-extrabold text-white leading-[0.92] tracking-tight mb-5" style={{ fontSize: "clamp(54px, 7.5vw, 104px)" }}>
-                Anchoring<br />
-                <span className="cyan-shimmer">Redefined.</span>
+              <h1 className="font-extrabold text-white leading-[0.92] tracking-tight mb-5" style={{ fontSize: "clamp(40px, 6vw, 84px)" }}>
+                The Last Shore Anchor<br />
+                <span className="cyan-shimmer">You'll Ever Need.</span>
               </h1>
               <p className="text-white/75 text-lg leading-relaxed mb-5 max-w-lg">
-                Patent-pending Intelligent Exit System™ engineered by boaters who refused to accept "good enough." Because anchoring your boat should never be as embarrassing as you launching it.
+                Set in seconds. Holds all day. Built in America.
               </p>
               <div className="flex flex-wrap gap-2 mb-9">
                 {["Designed in USA 🇺🇸", "Lifetime Warranty on Anchors", "4.97★ Rated", "Patent Pending"].map((t) => (
