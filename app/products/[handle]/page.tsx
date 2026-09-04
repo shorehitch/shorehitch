@@ -113,7 +113,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
             <div><span className="block text-[#4AC9D3]">Secure</span>Shopify Checkout</div>
           </div>
 
-          <ProductPurchase variants={product.variants.nodes} enableEngraving={ENGRAVABLE_HANDLES.has(handle)} engravingVariantId={engravingVariantId} />
+          <ProductPurchase productId={product.id} productName={product.title} variants={product.variants.nodes} enableEngraving={ENGRAVABLE_HANDLES.has(handle)} engravingVariantId={engravingVariantId} />
 
           <div className="mt-8 space-y-3 text-sm text-white/48">
             <div className="rounded-lg border border-white/10 bg-[#0A0A0A] px-4 py-3">Product availability and pricing are pulled directly from Shopify.</div>
