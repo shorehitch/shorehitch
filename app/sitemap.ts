@@ -1,13 +1,25 @@
 import type { MetadataRoute } from "next";
+import { getProducts } from "../lib/shopify/products";
 
 const STATIC_PATHS = ["/", "/shop", "/compare", "/which-shorehitch", "/how-it-works", "/about", "/faq", "/dealer", "/contact", "/reviews", "/anchor-education"];
-const PRODUCT_HANDLES = ["shorehitch", "baby-hitch-18-12", "shorehitch-bucket-pre-order-today", "360-anchor-swivel", "shorehook-tether-adjuster", "custom-dock-lines-pair", "dry-bag-storage", "custom-engraving", "soft-top-handle-dek-x"];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shorehitch.com";
   const now = new Date();
+  const products = await getProducts(100).catch(() => []);
+
   return [
-    ...STATIC_PATHS.map((path) => ({ url: `${siteUrl}${path}`, lastModified: now, changeFrequency: path === "/" ? "weekly" as const : "monthly" as const, priority: path === "/" ? 1 : 0.7 })),
-    ...PRODUCT_HANDLES.map((handle) => ({ url: `${siteUrl}/products/${handle}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.9 })),
+    ...STATIC_PATHS.map((path) => ({
+      url: `${siteUrl}${path}`,
+      lastModified: now,
+      changeFrequency: path === "/" ? "weekly" as const : "monthly" as const,
+      priority: path === "/" ? 1 : 0.7,
+    })),
+    ...products.map((product) => ({
+      url: `${siteUrl}/products/${product.handle}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    })),
   ];
 }
