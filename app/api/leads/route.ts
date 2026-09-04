@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const MAX_LENGTH = 4000;
 const ALLOWED_TYPES = new Set(["contact", "dealer"]);
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function clean(value: unknown, max = 500) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -22,15 +23,14 @@ export async function POST(request: NextRequest) {
     const type = clean(body?.type, 20);
     if (!ALLOWED_TYPES.has(type)) return NextResponse.json({ error: "Invalid submission type" }, { status: 400 });
 
-    // Honeypot: silently accept bot submissions without forwarding them.
     if (clean(body?.companyWebsite, 200)) return NextResponse.json({ ok: true });
 
-    const email = clean(body?.email, 320);
+    const email = clean(body?.email, 320).toLowerCase();
     const firstName = clean(body?.firstName, 100);
     const lastName = clean(body?.lastName, 100);
     const message = clean(body?.message, MAX_LENGTH);
-    if (!email || !firstName || !lastName || !message) {
-      return NextResponse.json({ error: "Please complete all required fields." }, { status: 400 });
+    if (!email || !EMAIL_PATTERN.test(email) || !firstName || !lastName || !message) {
+      return NextResponse.json({ error: "Please complete all required fields with a valid email address." }, { status: 400 });
     }
 
     const payload = {
@@ -90,18 +90,22 @@ export async function POST(request: NextRequest) {
           reply_to: email,
           subject,
           html,
+          tags: [
+            { name: "source", value: "shorehitch-headless" },
+            { name: "lead_type", value: type },
+          ],
         }),
         cache: "no-store",
       });
 
       if (!response.ok) {
+        console.error("Resend lead delivery failed", response.status, await response.text());
         return NextResponse.json({ error: "We could not deliver your message. Please try again shortly." }, { status: 502 });
       }
 
       return NextResponse.json({ ok: true });
     }
 
-    // Optional fallback for teams that prefer a CRM/automation webhook.
     const webhook = process.env.LEADS_WEBHOOK_URL;
     if (webhook) {
       const response = await fetch(webhook, {
