@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SiteShell from "../../../components/storefront/site-shell";
 import ProductPurchase from "../../../components/cart/product-purchase";
+import ProductView from "../../../components/analytics/product-view";
 import { getProduct } from "../../../lib/shopify/products";
 
 export const revalidate = 900;
@@ -75,6 +76,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
   return (
     <SiteShell>
+      <ProductView id={product.id} name={product.title} currency={minimum.currencyCode} value={Number(minimum.amount)} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c") }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c") }} />
       <section className="mx-auto grid max-w-7xl gap-10 px-5 py-10 md:grid-cols-[1.05fr_0.95fr] md:px-8 md:py-16 lg:gap-16">
