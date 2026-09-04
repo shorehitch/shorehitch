@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Analytics from "../components/analytics/analytics";
 import OrganizationJsonLd from "../components/seo/organization-jsonld";
 import "../src/index.css";
@@ -23,6 +25,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <OrganizationJsonLd />
         {children}
         <Analytics />
+        <VercelAnalytics />
+        <SpeedInsights />
       </body>
     </html>
   );
