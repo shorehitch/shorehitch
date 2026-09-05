@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CartLink from "../cart/cart-link";
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   return (
@@ -19,8 +20,18 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
             <Link className="transition hover:text-white" href="/search">Search</Link>
             <Link className="transition hover:text-white" href="/account">Account</Link>
           </nav>
-          <Link href="/cart" className="rounded-md border border-white/15 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition hover:border-[#4AC9D3] hover:text-[#4AC9D3]">Cart</Link>
+          <CartLink />
         </div>
+        <nav aria-label="Mobile navigation" className="overflow-x-auto border-t border-white/10 md:hidden">
+          <div className="mx-auto flex min-w-max items-center gap-6 px-5 py-3 text-xs font-bold uppercase tracking-wider text-white/60">
+            <Link className="transition hover:text-white" href="/shop">Shop</Link>
+            <Link className="transition hover:text-white" href="/which-shorehitch">Compare</Link>
+            <Link className="transition hover:text-white" href="/how-it-works">How It Works</Link>
+            <Link className="transition hover:text-white" href="/reviews">Reviews</Link>
+            <Link className="transition hover:text-white" href="/search">Search</Link>
+            <Link className="transition hover:text-white" href="/account">Account</Link>
+          </div>
+        </nav>
       </header>
       <main>{children}</main>
       <footer className="mt-20 border-t border-white/10 bg-[#070707]">
