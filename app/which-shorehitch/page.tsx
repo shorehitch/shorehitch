@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import SiteShell from "../../components/storefront/site-shell";
 import { getProduct } from "../../lib/shopify/products";
@@ -10,9 +11,9 @@ export const metadata: Metadata = {
 };
 
 const PRODUCTS = [
-  { handle: "baby-hitch-18-12", label: "Baby ShoreHitch", bestFor: "PWC, compact vessels and smaller setups" },
-  { handle: "shorehitch", label: "ShoreHitch OG", bestFor: "Primary shoreline and sandbar anchoring" },
-  { handle: "shorehitch-bucket-pre-order-today", label: "Bucket Anchor", bestFor: "Deep-water anchoring and larger boating setups" },
+  { handle: "baby-hitch-18-12", label: "Baby ShoreHitch", eyebrow: "Compact", bestFor: "PWC, compact vessels and smaller setups" },
+  { handle: "shorehitch", label: "ShoreHitch OG", eyebrow: "Flagship", bestFor: "Primary shoreline and sandbar anchoring" },
+  { handle: "shorehitch-bucket-pre-order-today", label: "Bucket Anchor", eyebrow: "Deep Water", bestFor: "Deep-water anchoring and larger boating setups" },
 ];
 
 function money(amount: string, currencyCode: string) {
@@ -21,30 +22,45 @@ function money(amount: string, currencyCode: string) {
 
 export default async function WhichShoreHitchPage() {
   const products = await Promise.all(PRODUCTS.map(async (item) => ({ ...item, product: await getProduct(item.handle).catch(() => null) })));
+
   return (
     <SiteShell>
-      <section className="mx-auto max-w-6xl px-5 py-14 md:px-8 md:py-20">
-        <div className="max-w-3xl">
-          <div className="text-xs font-black uppercase tracking-[0.24em] text-[#4AC9D3]">Product selector</div>
-          <h1 className="mt-3 text-4xl font-black tracking-tight md:text-6xl">Which ShoreHitch is right for you?</h1>
-          <p className="mt-5 text-base leading-7 text-white/55 md:text-lg">Start with where you boat and how you plan to anchor. Pricing and availability below come directly from Shopify.</p>
+      <section className="relative overflow-hidden border-b border-white/10 bg-[#070707]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_15%,rgba(74,201,211,0.12),transparent_30%)]" />
+        <div className="relative mx-auto max-w-7xl px-5 py-16 md:px-8 md:py-24">
+          <div className="max-w-3xl">
+            <div className="mb-5 flex items-center gap-3"><span className="h-px w-8 bg-[#4AC9D3]" /><span className="text-[11px] font-black uppercase tracking-[0.26em] text-[#4AC9D3]">Find Your Anchor</span></div>
+            <h1 className="text-5xl font-extrabold tracking-[-0.04em] md:text-7xl">The right ShoreHitch starts with the way you use it.</h1>
+            <p className="mt-6 max-w-2xl text-base leading-8 text-white/55 md:text-lg">Compare the current systems by application first, then review each product’s live Shopify configuration, price and availability.</p>
+          </div>
         </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {products.map(({ handle, label, bestFor, product }) => (
-            <div key={handle} className="rounded-2xl border border-white/10 bg-[#0A0A0A] p-5">
-              <div className="aspect-[4/3] overflow-hidden rounded-xl bg-[#111]">
-                {product?.featuredImage ? <img src={product.featuredImage.url} alt={product.featuredImage.altText || label} className="h-full w-full object-cover" /> : null}
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-16 md:px-8 md:py-20">
+        <div className="grid gap-5 md:grid-cols-3">
+          {products.map(({ handle, label, eyebrow, bestFor, product }, index) => (
+            <div key={handle} className={`overflow-hidden rounded-xl border bg-[#0A0A0A] ${index === 1 ? "border-[#4AC9D3]/55" : "border-white/10"}`}>
+              <div className="relative aspect-[4/3] overflow-hidden bg-[#111]">
+                {product?.featuredImage ? <Image src={product.featuredImage.url} alt={product.featuredImage.altText || label} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" /> : null}
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black to-transparent" />
+                <span className="absolute left-4 top-4 rounded bg-black/70 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.18em] text-[#4AC9D3] backdrop-blur-sm">{eyebrow}</span>
               </div>
-              <div className="mt-5 text-xs font-black uppercase tracking-[0.18em] text-[#4AC9D3]">{bestFor}</div>
-              <h2 className="mt-2 text-2xl font-black">{product?.title || label}</h2>
-              {product && <div className="mt-3 font-black text-white">From {money(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}</div>}
-              <p className="mt-3 text-sm leading-6 text-white/45">{product?.description || "Explore this ShoreHitch setup to see current specifications and options."}</p>
-              <Link href={`/products/${handle}`} className="mt-6 inline-flex rounded-lg bg-[#4AC9D3] px-5 py-3 text-xs font-black uppercase tracking-wider text-black">View product</Link>
+              <div className="p-6">
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-white/35">Best starting point for</div>
+                <div className="mt-2 text-sm font-bold leading-6 text-[#4AC9D3]">{bestFor}</div>
+                <h2 className="mt-4 text-3xl font-bold tracking-tight">{product?.title || label}</h2>
+                {product ? <div className="mt-3 text-lg font-black text-white">From {money(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}</div> : null}
+                <p className="mt-4 line-clamp-4 text-sm leading-6 text-white/45">{product?.description || "Explore this ShoreHitch setup to see current specifications and options."}</p>
+                <Link href={`/products/${handle}`} className="mt-7 inline-flex rounded bg-[#4AC9D3] px-5 py-3 text-xs font-black uppercase tracking-wider text-black">View product</Link>
+              </div>
             </div>
           ))}
         </div>
-        <div className="mt-10 rounded-2xl border border-white/10 bg-[#0A0A0A] p-6 text-sm leading-7 text-white/50">
-          <strong className="text-white">Still deciding?</strong> Choose based on your actual use case rather than boat length alone. Shoreline/sandbar anchoring, compact PWC setups, and deep-water anchoring place different demands on the system.
+
+        <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 md:grid-cols-3">
+          <div className="bg-black p-6"><div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#4AC9D3]">01</div><div className="mt-3 text-lg font-bold">Where do you anchor?</div><p className="mt-2 text-sm leading-6 text-white/45">Shoreline/sandbar, compact PWC use and deep-water anchoring create different needs.</p></div>
+          <div className="bg-black p-6"><div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#4AC9D3]">02</div><div className="mt-3 text-lg font-bold">How do you use the boat?</div><p className="mt-2 text-sm leading-6 text-white/45">Start with your actual setup and boating environment rather than choosing on appearance alone.</p></div>
+          <div className="bg-black p-6"><div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#4AC9D3]">03</div><div className="mt-3 text-lg font-bold">Need help deciding?</div><p className="mt-2 text-sm leading-6 text-white/45">Tell us about the application and we’ll point you toward the current system information without inventing compatibility.</p><Link href="/contact" className="mt-4 inline-block text-xs font-black uppercase tracking-wider text-[#4AC9D3]">Discuss your setup →</Link></div>
         </div>
       </section>
     </SiteShell>
