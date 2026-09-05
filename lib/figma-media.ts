@@ -19,6 +19,8 @@ const MEDIA: Record<string, FigmaMediaItem[]> = {
     { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Blue_Shorehitch.png?v=1787847178" },
     { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Black_Shorehitch.jpg?v=1787846954" },
     { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/Red_Shorehitch.png?v=1787847502" },
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/7740C8BA-0192-49AD-B6D8-7DAA70E45FE1_2.png?v=1787845142" },
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/00852E52-F824-4A41-8548-5AE33530A3CC_2.png?v=1787845143" },
   ],
   "360-anchor-swivel": [
     { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/698074571f68d17cc2037417.png?v=1783102734" },
