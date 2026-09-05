@@ -40,6 +40,18 @@ const MEDIA: Record<string, FigmaMediaItem[]> = {
   ],
   "shorehitch-bucket-pre-order-today": [
     { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260202_000624_ec4a2448-a882-4a52-9fe5-d866947da597_4.png?v=1787845811" },
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_225635_1dd60d40-2020-4e07-9f72-b20972ec2441_5.jpg?v=1787845762" },
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260202_005819_5012b37a-2249-4771-a264-7b3300abbd74_1_4.png?v=1787845816" },
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_204053_6e52e1f3-4b2e-4e62-9581-7000ea883dd4_3.png?v=1787845721" },
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/hf_20260201_005724_bb7ef5b1-269d-45ed-96f6-01a96d32158f_4.png?v=1787845720" },
+  ],
+  "custom-engraving": [
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/IMG_1200_4.jpg?v=1787845291" },
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/IMG_1199_4.jpg?v=1787845292" },
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/shorehitch-2024-tom-leigh-8278.jpg?v=1783105014" },
+  ],
+  "soft-top-handle-dek-x": [
+    { type: "image", src: "https://cdn.shopify.com/s/files/1/0934/6668/9902/files/693cc25bab2594c80a9de00d.png?v=1783102739" },
   ],
 };
 
