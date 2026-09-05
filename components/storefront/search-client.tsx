@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 import { trackCommerceEvent } from "@/lib/analytics/events";
 
 type Product = {
@@ -19,25 +21,44 @@ function money(amount: string, currencyCode: string) {
 }
 
 export default function SearchClient() {
-  const [query, setQuery] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlQuery = searchParams.get("q")?.trim() || "";
+  const [query, setQuery] = useState(urlQuery);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  async function submit(event: FormEvent) {
+  useEffect(() => {
+    if (!urlQuery) {
+      setProducts([]);
+      setSearched(false);
+      return;
+    }
+
+    let active = true;
+    setQuery(urlQuery);
+    setLoading(true);
+    fetch(`/api/search?q=${encodeURIComponent(urlQuery)}`, { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : { products: [] })
+      .then((payload) => {
+        if (!active) return;
+        setProducts(payload.products || []);
+        setSearched(true);
+        trackCommerceEvent("search", { search_term: urlQuery });
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => { active = false; };
+  }, [urlQuery]);
+
+  function submit(event: FormEvent) {
     event.preventDefault();
     const q = query.trim();
     if (!q) return;
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { cache: "no-store" });
-      const payload = response.ok ? await response.json() : { products: [] };
-      setProducts(payload.products || []);
-      setSearched(true);
-      trackCommerceEvent("search", { search_term: q });
-    } finally {
-      setLoading(false);
-    }
+    router.push(`/search?q=${encodeURIComponent(q)}`);
   }
 
   return (
@@ -53,7 +74,7 @@ export default function SearchClient() {
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
         {products.map((product) => (
           <Link key={product.id} href={`/products/${product.handle}`} className="flex gap-4 rounded-xl border border-white/10 bg-[#0A0A0A] p-4 transition hover:border-[#4AC9D3]/45">
-            <div className="h-24 w-24 flex-none overflow-hidden rounded-lg bg-[#111]">{product.featuredImage ? <img src={product.featuredImage.url} alt={product.featuredImage.altText || product.title} className="h-full w-full object-cover" /> : null}</div>
+            <div className="h-24 w-24 flex-none overflow-hidden rounded-lg bg-[#111]">{product.featuredImage ? <Image src={product.featuredImage.url} alt={product.featuredImage.altText || product.title} width={192} height={192} sizes="96px" className="h-full w-full object-cover" /> : null}</div>
             <div className="min-w-0">
               <h2 className="font-bold text-white">{product.title}</h2>
               <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/40">{product.description}</p>
