@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import SiteShell from "../../../components/storefront/site-shell";
@@ -91,7 +92,15 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
         <div>
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0A0A0A]">
             {product.featuredImage ? (
-              <img src={product.featuredImage.url} alt={product.featuredImage.altText || product.title} className="aspect-square h-full w-full object-cover" />
+              <Image
+                src={product.featuredImage.url}
+                alt={product.featuredImage.altText || product.title}
+                width={product.featuredImage.width || 1400}
+                height={product.featuredImage.height || 1400}
+                sizes="(max-width: 768px) 100vw, 55vw"
+                priority
+                className="aspect-square h-full w-full object-cover"
+              />
             ) : (
               <div className="flex aspect-square items-center justify-center text-white/30">ShoreHitch</div>
             )}
@@ -100,7 +109,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
             <div className="mt-4 grid grid-cols-4 gap-3">
               {product.images.nodes.slice(1, 5).map((image) => (
                 <div key={image.url} className="overflow-hidden rounded-lg border border-white/10 bg-[#0A0A0A]">
-                  <img src={image.url} alt={image.altText || product.title} className="aspect-square h-full w-full object-cover" />
+                  <Image src={image.url} alt={image.altText || product.title} width={image.width || 600} height={image.height || 600} sizes="25vw" className="aspect-square h-full w-full object-cover" />
                 </div>
               ))}
             </div>
@@ -143,7 +152,9 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
             {related.map((item) => (
               <Link key={item.id} href={`/products/${item.handle}`} className="group overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] transition hover:border-[#4AC9D3]/45">
                 <div className="aspect-square overflow-hidden bg-[#111]">
-                  {item.featuredImage && <img src={item.featuredImage.url} alt={item.featuredImage.altText || item.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" />}
+                  {item.featuredImage && (
+                    <Image src={item.featuredImage.url} alt={item.featuredImage.altText || item.title} width={item.featuredImage.width || 800} height={item.featuredImage.height || 800} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" />
+                  )}
                 </div>
                 <div className="p-4">
                   <div className="font-bold text-white">{item.title}</div>
