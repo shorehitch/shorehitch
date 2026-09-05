@@ -57,6 +57,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   const hasRange = minimum.amount !== maximum.amount;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shorehitch.com";
   const productUrl = `${siteUrl}/products/${product.handle}`;
+  const logoUploadsEnabled = process.env.NEXT_PUBLIC_ENGRAVING_LOGO_UPLOADS_ENABLED === "true";
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -130,7 +131,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
             <div><span className="block text-[#4AC9D3]">Secure</span>Shopify Checkout</div>
           </div>
 
-          <ProductPurchase productId={product.id} productName={product.title} variants={product.variants.nodes} enableEngraving={ENGRAVABLE_HANDLES.has(handle)} engravingVariantId={engravingVariantId} />
+          <ProductPurchase productId={product.id} productName={product.title} variants={product.variants.nodes} enableEngraving={ENGRAVABLE_HANDLES.has(handle)} engravingVariantId={engravingVariantId} logoUploadsEnabled={logoUploadsEnabled} />
 
           <div className="mt-8 space-y-3 text-sm text-white/48">
             <div className="rounded-lg border border-white/10 bg-[#0A0A0A] px-4 py-3">Product availability and pricing are pulled directly from Shopify.</div>
