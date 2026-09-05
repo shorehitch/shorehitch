@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import BrandHeader from "./brand-header";
 
+function InstagramIcon(){return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.8" r=".8" fill="currentColor" stroke="none"/></svg>}
+
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-black text-white">
@@ -15,6 +17,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
             </Link>
             <p className="-mt-2 max-w-sm text-sm leading-6 text-white/45">Premium anchoring systems and accessories designed for boaters who expect more from their gear.</p>
             <div className="mt-5 flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-white/45"><span className="rounded-full border border-white/10 px-3 py-1.5">Designed in USA</span><span className="rounded-full border border-white/10 px-3 py-1.5">Patent Pending</span><span className="rounded-full border border-white/10 px-3 py-1.5">Lifetime Anchor Warranty</span></div>
+            <div className="mt-5 flex items-center gap-3"><a href="https://www.instagram.com/shore_hitch/" target="_blank" rel="noopener noreferrer" aria-label="ShoreHitch on Instagram" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/60 transition hover:border-[#4AC9D3]/60 hover:text-[#4AC9D3]"><InstagramIcon/></a><span className="text-xs text-white/35">Follow ShoreHitch</span></div>
           </div>
           <div className="text-sm text-white/55"><div className="mb-4 text-[11px] font-black uppercase tracking-[0.18em] text-[#4AC9D3]">Shop</div><div className="flex flex-col gap-2.5"><Link href="/shop">All Products</Link><Link href="/which-shorehitch">Which ShoreHitch?</Link><Link href="/how-it-works">How It Works</Link><Link href="/reviews">Reviews</Link></div></div>
           <div className="text-sm text-white/55"><div className="mb-4 text-[11px] font-black uppercase tracking-[0.18em] text-[#4AC9D3]">Support</div><div className="flex flex-col gap-2.5"><Link href="/faq">FAQ</Link><Link href="/contact">Contact</Link><Link href="/account">Customer Account</Link><Link href="/anchor-education">Anchor Education</Link></div></div>
