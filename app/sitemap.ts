@@ -4,6 +4,7 @@ import { getProducts } from "../lib/shopify/products";
 const STATIC_PATHS = [
   "/",
   "/shop",
+  "/why-shorehitch",
   "/which-shorehitch",
   "/how-it-works",
   "/about",
