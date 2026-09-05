@@ -13,13 +13,13 @@ This file tracks owner-level launch inputs that cannot be safely guessed in code
 - [x] Next Image optimization added to the homepage, shop, PDPs and collection pages.
 - [x] Product, Breadcrumb, FAQ, Organization, WebSite/SearchAction and ItemList structured data implemented where applicable.
 - [x] Preview deployments currently build successfully and no preview runtime errors were detected in the latest QA window.
-- [ ] Connect a Vercel Blob store to create `BLOB_READ_WRITE_TOKEN`, then set `NEXT_PUBLIC_ENGRAVING_LOGO_UPLOADS_ENABLED=true` for Preview and Production. Logo-upload code is already implemented and safely gated off until this is complete.
+- [x] Vercel Blob store connected for Preview and Production with `BLOB_READ_WRITE_TOKEN`; logo engraving feature flag enabled for both environments.
 - [ ] Confirm the production Storefront API public token is present in Vercel as `NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN` for Production and Preview before enabling token-required Storefront features. Core storefront operations do not require a private Admin credential.
 - [ ] Confirm `NEXT_PUBLIC_SITE_URL=https://shorehitch.com` for Production only.
 - [ ] Confirm free-shipping threshold and shipping-promise copy before displaying either globally.
 - [ ] Confirm return-policy language and fulfillment/ship SLA.
 - [ ] Confirm any performance claims used in marketing copy, especially timing, capacity, holding, current/side-load, and "first" claims.
-- [ ] Verify a real checkout receives product variants, quantities, text engraving attributes, and (after Blob activation) logo engraving URLs correctly.
+- [ ] Verify a real checkout receives product variants, quantities, text engraving attributes, and logo engraving URLs correctly.
 - [ ] Verify Shopify packing/order workflow exposes line attributes to fulfillment.
 - [ ] Complete final mobile and desktop visual QA on the production candidate.
 - [ ] Confirm any additional redirect inventory available only from Google Search Console before DNS cutover.
