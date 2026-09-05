@@ -1,0 +1,88 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import CartLink from "../cart/cart-link";
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
+  { href: "/which-shorehitch", label: "Which ShoreHitch?" },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/reviews", label: "Reviews" },
+  { href: "/dealer", label: "Become a Dealer" },
+  { href: "/contact", label: "Contact" },
+];
+
+function SearchIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </svg>
+  );
+}
+
+function MenuIcon({ open }: { open: boolean }) {
+  return open ? (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" /></svg>
+  ) : (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+  );
+}
+
+export default function BrandHeader() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <div className="border-b border-black/10 bg-[#4AC9D3] text-black">
+        <div className="mx-auto flex min-h-9 max-w-7xl items-center justify-center gap-3 px-5 text-center text-[10px] font-bold uppercase tracking-[0.2em] md:text-[11px]">
+          <Image src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-02.png?v=1783443368" alt="" width={46} height={20} className="h-5 w-auto object-contain" />
+          <span>Designed in the USA · Patent Pending · Lifetime Warranty on Anchor Units</span>
+        </div>
+      </div>
+
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/95 backdrop-blur-xl">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 md:px-8">
+          <Link href="/" aria-label="ShoreHitch home" className="flex min-w-0 items-center">
+            <Image
+              src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-03.png?v=1783102739"
+              alt="ShoreHitch — Anchoring Redefined"
+              width={280}
+              height={110}
+              priority
+              className="h-[82px] w-auto max-w-[190px] object-contain object-left md:max-w-[220px]"
+            />
+          </Link>
+
+          <nav aria-label="Primary navigation" className="hidden items-center gap-6 lg:flex">
+            {links.slice(1, 5).map((link) => (
+              <Link key={link.href} href={link.href} className="text-[13px] font-medium tracking-wide text-white/60 transition hover:text-[#4AC9D3]">{link.label}</Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2.5">
+            <Link href="/search" aria-label="Search" className="hidden p-2 text-white/50 transition hover:text-white md:block"><SearchIcon /></Link>
+            <CartLink />
+            <Link href="/shop" className="hidden rounded bg-[#4AC9D3] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-black transition hover:bg-[#6DD8E1] md:inline-flex">Shop Now</Link>
+            <button type="button" aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen((value) => !value)} className="rounded border border-white/10 p-2.5 text-white/70 lg:hidden"><MenuIcon open={open} /></button>
+          </div>
+        </div>
+
+        {open ? (
+          <nav id="mobile-menu" aria-label="Mobile navigation" className="border-t border-white/10 bg-[#0A0A0A] px-5 py-5 lg:hidden">
+            <div className="mx-auto flex max-w-7xl flex-col">
+              {links.map((link) => (
+                <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className="border-b border-white/8 py-3.5 text-sm font-semibold text-white/75 last:border-b-0">{link.label}</Link>
+              ))}
+              <Link href="/search" onClick={() => setOpen(false)} className="mt-3 rounded border border-white/15 px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-white">Search</Link>
+              <Link href="/shop" onClick={() => setOpen(false)} className="mt-2 rounded bg-[#4AC9D3] px-4 py-3.5 text-center text-xs font-black uppercase tracking-wider text-black">Shop Now</Link>
+            </div>
+          </nav>
+        ) : null}
+      </header>
+    </>
+  );
+}
