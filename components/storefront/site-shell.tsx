@@ -1,59 +1,41 @@
+import Image from "next/image";
 import Link from "next/link";
-import CartLink from "../cart/cart-link";
+import BrandHeader from "./brand-header";
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="border-b border-white/10 bg-black/95">
-        <div className="mx-auto flex min-h-10 max-w-7xl items-center justify-center px-5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">
-          Designed in the USA · Lifetime warranty on ShoreHitch anchor systems
-        </div>
-      </div>
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-black/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 md:px-8">
-          <Link href="/" className="text-lg font-black uppercase tracking-[0.16em] text-white">ShoreHitch</Link>
-          <nav aria-label="Primary navigation" className="hidden items-center gap-7 text-sm font-semibold text-white/70 md:flex">
-            <Link className="transition hover:text-white" href="/shop">Shop</Link>
-            <Link className="transition hover:text-white" href="/which-shorehitch">Which ShoreHitch?</Link>
-            <Link className="transition hover:text-white" href="/how-it-works">How It Works</Link>
-            <Link className="transition hover:text-white" href="/reviews">Reviews</Link>
-            <Link className="transition hover:text-white" href="/search">Search</Link>
-            <Link className="transition hover:text-white" href="/account">Account</Link>
-          </nav>
-          <CartLink />
-        </div>
-        <nav aria-label="Mobile navigation" className="overflow-x-auto border-t border-white/10 md:hidden">
-          <div className="mx-auto flex min-w-max items-center gap-6 px-5 py-3 text-xs font-bold uppercase tracking-wider text-white/60">
-            <Link className="transition hover:text-white" href="/shop">Shop</Link>
-            <Link className="transition hover:text-white" href="/which-shorehitch">Compare</Link>
-            <Link className="transition hover:text-white" href="/how-it-works">How It Works</Link>
-            <Link className="transition hover:text-white" href="/reviews">Reviews</Link>
-            <Link className="transition hover:text-white" href="/search">Search</Link>
-            <Link className="transition hover:text-white" href="/account">Account</Link>
-          </div>
-        </nav>
-      </header>
+      <BrandHeader />
       <main>{children}</main>
-      <footer className="mt-20 border-t border-white/10 bg-[#070707]">
-        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-12 sm:grid-cols-2 lg:grid-cols-4 md:px-8">
+      <footer className="border-t border-white/10 bg-[#070707]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-[1.35fr_0.8fr_0.8fr_0.8fr] md:px-8">
           <div>
-            <div className="text-lg font-black uppercase tracking-[0.16em]">ShoreHitch</div>
-            <p className="mt-3 max-w-sm text-sm leading-6 text-white/45">Premium marine anchoring equipment designed for boaters who expect their gear to work as hard as they do.</p>
+            <Link href="/" aria-label="ShoreHitch home" className="inline-flex">
+              <Image src="https://cdn.shopify.com/s/files/1/0934/6668/9902/files/ShoreHitch-03.png?v=1783102739" alt="ShoreHitch" width={260} height={100} className="h-24 w-auto object-contain object-left" />
+            </Link>
+            <p className="mt-1 max-w-sm text-sm leading-6 text-white/45">Premium anchoring systems and accessories designed for boaters who expect more from their gear.</p>
+            <div className="mt-5 flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">
+              <span className="rounded-full border border-white/10 px-3 py-1.5">Designed in USA</span>
+              <span className="rounded-full border border-white/10 px-3 py-1.5">Patent Pending</span>
+              <span className="rounded-full border border-white/10 px-3 py-1.5">Lifetime Anchor Warranty</span>
+            </div>
+          </div>
+
+          <div className="text-sm text-white/55">
+            <div className="mb-4 text-[11px] font-black uppercase tracking-[0.18em] text-[#4AC9D3]">Shop</div>
+            <div className="flex flex-col gap-2.5"><Link href="/shop">All Products</Link><Link href="/which-shorehitch">Which ShoreHitch?</Link><Link href="/how-it-works">How It Works</Link><Link href="/reviews">Reviews</Link></div>
           </div>
           <div className="text-sm text-white/55">
-            <div className="mb-3 font-bold uppercase tracking-wider text-white">Shop</div>
-            <div className="flex flex-col gap-2"><Link href="/shop">All Products</Link><Link href="/which-shorehitch">Compare Systems</Link><Link href="/how-it-works">How It Works</Link><Link href="/reviews">Reviews</Link></div>
+            <div className="mb-4 text-[11px] font-black uppercase tracking-[0.18em] text-[#4AC9D3]">Support</div>
+            <div className="flex flex-col gap-2.5"><Link href="/faq">FAQ</Link><Link href="/contact">Contact</Link><Link href="/account">Customer Account</Link><Link href="/anchor-education">Anchor Education</Link></div>
           </div>
           <div className="text-sm text-white/55">
-            <div className="mb-3 font-bold uppercase tracking-wider text-white">Support</div>
-            <div className="flex flex-col gap-2"><Link href="/faq">FAQ</Link><Link href="/contact">Contact</Link><Link href="/account">Customer Account</Link><Link href="/anchor-education">Anchor Education</Link></div>
-          </div>
-          <div className="text-sm text-white/55">
-            <div className="mb-3 font-bold uppercase tracking-wider text-white">Partners</div>
-            <div className="flex flex-col gap-2"><Link href="/dealer">Dealer Program</Link><Link href="/about">About ShoreHitch</Link></div>
-            <p className="mt-5 text-white/35">Anchoring Redefined.</p>
+            <div className="mb-4 text-[11px] font-black uppercase tracking-[0.18em] text-[#4AC9D3]">Company</div>
+            <div className="flex flex-col gap-2.5"><Link href="/about">About</Link><Link href="/dealer">Become a Dealer</Link><Link href="/search">Search</Link></div>
+            <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-white/25">Anchoring Redefined.</p>
           </div>
         </div>
+        <div className="border-t border-white/8 px-5 py-5 text-center text-[10px] uppercase tracking-[0.18em] text-white/25">© ShoreHitch. All rights reserved.</div>
       </footer>
     </div>
   );
