@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import SiteShell from "../../../components/storefront/site-shell";
@@ -23,9 +24,22 @@ export default async function CollectionPage({ params }: { params: Promise<{ han
   const { handle } = await params;
   const collection = await getCollection(handle);
   if (!collection) notFound();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shorehitch.com";
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: collection.title,
+    itemListElement: collection.products.nodes.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: product.title,
+      url: `${siteUrl}/products/${product.handle}`,
+    })),
+  };
 
   return (
     <SiteShell>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd).replace(/</g, "\\u003c") }} />
       <section className="mx-auto max-w-7xl px-5 pb-8 pt-14 md:px-8 md:pt-20">
         <div className="text-xs font-black uppercase tracking-[0.22em] text-[#4AC9D3]">ShoreHitch collection</div>
         <h1 className="mt-3 text-4xl font-black tracking-tight md:text-6xl">{collection.title}</h1>
@@ -36,7 +50,9 @@ export default async function CollectionPage({ params }: { params: Promise<{ han
           {collection.products.nodes.map((product) => (
             <Link key={product.id} href={`/products/${product.handle}`} className="group overflow-hidden rounded-2xl border border-white/10 bg-[#0A0A0A] transition hover:border-[#4AC9D3]/50">
               <div className="aspect-square overflow-hidden bg-[#111]">
-                {product.featuredImage ? <img src={product.featuredImage.url} alt={product.featuredImage.altText || product.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" /> : null}
+                {product.featuredImage ? (
+                  <Image src={product.featuredImage.url} alt={product.featuredImage.altText || product.title} width={product.featuredImage.width || 1000} height={product.featuredImage.height || 1000} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+                ) : null}
               </div>
               <div className="p-5">
                 <h2 className="text-xl font-bold">{product.title}</h2>
