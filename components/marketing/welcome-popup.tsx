@@ -30,7 +30,7 @@ export default function WelcomePopup() {
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, type: "welcome", message: "Welcome10 email capture" }),
+        body: JSON.stringify({ ...data, type: "welcome", message: "Welcome10 email and phone capture" }),
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload?.error || "Unable to submit");
@@ -51,7 +51,7 @@ export default function WelcomePopup() {
         <div className="border-b border-white/10 bg-[radial-gradient(circle_at_80%_20%,rgba(74,201,211,.18),transparent_36%)] px-6 pb-7 pt-9 sm:px-8">
           <div className="text-[10px] font-black uppercase tracking-[.26em] text-[#4AC9D3]">Welcome to ShoreHitch</div>
           <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-white">Take 10% off your first order.</h2>
-          <p className="mt-3 text-sm leading-6 text-white/58">Join the ShoreHitch list for product drops, boating gear updates and your first-order code.</p>
+          <p className="mt-3 text-sm leading-6 text-white/58">Enter your email and mobile number to unlock your first-order code and receive ShoreHitch product drops and gear updates.</p>
         </div>
         {status === "success" ? (
           <div className="px-6 py-8 text-center sm:px-8">
@@ -63,8 +63,8 @@ export default function WelcomePopup() {
         ) : (
           <form onSubmit={submit} className="grid gap-3 px-6 py-7 sm:px-8">
             <div className="grid gap-3 sm:grid-cols-2"><input name="firstName" required placeholder="First name" autoComplete="given-name" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/><input name="lastName" required placeholder="Last name" autoComplete="family-name" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/></div>
-            <input name="email" type="email" required placeholder="Email address" autoComplete="email" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/>
-            <input name="phone" type="tel" placeholder="Phone (optional)" autoComplete="tel" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/>
+            <input name="email" type="email" required placeholder="Email address *" autoComplete="email" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/>
+            <input name="phone" type="tel" required placeholder="Mobile phone *" autoComplete="tel" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/>
             <input name="companyWebsite" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
             <button disabled={status === "sending"} className="mt-1 rounded bg-[#4AC9D3] px-6 py-3.5 text-sm font-black uppercase tracking-wider text-black hover:bg-[#6DD8E1] disabled:opacity-60">{status === "sending" ? "Unlocking…" : "Unlock 10% Off"}</button>
             {error ? <p className="text-sm text-red-300">{error}</p> : null}
