@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import SiteShell from "../../../components/storefront/site-shell";
 import ProductPurchase from "../../../components/cart/product-purchase";
 import ProductView from "../../../components/analytics/product-view";
-import { getProduct } from "../../../lib/shopify/products";
+import { getProduct, getProducts } from "../../../lib/shopify/products";
 
 export const revalidate = 900;
 
@@ -34,7 +35,10 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
 
 export default async function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params;
-  const product = await getProduct(handle);
+  const [product, catalog] = await Promise.all([
+    getProduct(handle),
+    getProducts(20).catch(() => []),
+  ]);
   if (!product) notFound();
 
   let engravingVariantId: string | null = null;
@@ -42,6 +46,10 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
     const engraving = await getProduct("custom-engraving").catch(() => null);
     engravingVariantId = engraving?.variants.nodes.find((variant) => variant.availableForSale)?.id || engraving?.variants.nodes[0]?.id || null;
   }
+
+  const related = catalog
+    .filter((item) => item.id !== product.id && item.handle !== "custom-engraving" && item.availableForSale)
+    .slice(0, 4);
 
   const minimum = product.priceRange.minVariantPrice;
   const maximum = product.priceRange.maxVariantPrice;
@@ -121,6 +129,31 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
           </div>
         </div>
       </section>
+
+      {related.length > 0 && (
+        <section className="mx-auto max-w-7xl px-5 pb-20 md:px-8">
+          <div className="flex items-end justify-between gap-5 border-t border-white/10 pt-12">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.22em] text-[#4AC9D3]">Build your setup</div>
+              <h2 className="mt-3 text-3xl font-black tracking-tight">More from ShoreHitch</h2>
+            </div>
+            <Link href="/shop" className="hidden text-sm font-bold text-[#4AC9D3] sm:block">Shop all →</Link>
+          </div>
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {related.map((item) => (
+              <Link key={item.id} href={`/products/${item.handle}`} className="group overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] transition hover:border-[#4AC9D3]/45">
+                <div className="aspect-square overflow-hidden bg-[#111]">
+                  {item.featuredImage && <img src={item.featuredImage.url} alt={item.featuredImage.altText || item.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" />}
+                </div>
+                <div className="p-4">
+                  <div className="font-bold text-white">{item.title}</div>
+                  <div className="mt-2 text-sm font-black text-[#4AC9D3]">{money(item.priceRange.minVariantPrice.amount, item.priceRange.minVariantPrice.currencyCode)}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </SiteShell>
   );
 }
