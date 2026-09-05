@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
       { source: "/collections/all", destination: "/shop", permanent: true },
       { source: "/collections/frontpage", destination: "/shop", permanent: true },
       { source: "/products-preview", destination: "/shop", permanent: true },
+      { source: "/compare", destination: "/which-shorehitch", permanent: true },
+      { source: "/why-shorehitch", destination: "/how-it-works", permanent: true },
       { source: "/pages/where-to-buy", destination: "/dealer", permanent: true },
       {
         source: "/blogs/news/how-to-anchor-your-boat-at-a-sandbar-essential-safety-tips-for-beginners-1",
