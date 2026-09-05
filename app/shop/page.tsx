@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import SiteShell from "../../components/storefront/site-shell";
 import { getProducts } from "../../lib/shopify/products";
@@ -23,13 +24,21 @@ export default async function ShopPage() {
 
       <section className="mx-auto max-w-7xl px-5 pb-16 md:px-8">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => {
+          {products.map((product, index) => {
             const price = product.priceRange.minVariantPrice;
             return (
               <Link key={product.id} href={`/products/${product.handle}`} className="group overflow-hidden rounded-2xl border border-white/10 bg-[#0A0A0A] transition hover:-translate-y-0.5 hover:border-[#4AC9D3]/50">
                 <div className="aspect-square overflow-hidden bg-[#111]">
                   {product.featuredImage ? (
-                    <img src={product.featuredImage.url} alt={product.featuredImage.altText || product.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+                    <Image
+                      src={product.featuredImage.url}
+                      alt={product.featuredImage.altText || product.title}
+                      width={product.featuredImage.width || 1200}
+                      height={product.featuredImage.height || 1200}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      priority={index < 3}
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                    />
                   ) : (
                     <div className="flex h-full items-center justify-center text-sm text-white/30">ShoreHitch</div>
                   )}
