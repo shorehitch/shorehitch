@@ -1,5 +1,6 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
 import { useMemo, useState } from "react";
 import { trackCommerceEvent } from "@/lib/analytics/events";
 
@@ -12,6 +13,7 @@ type Variant = {
 };
 
 type CartLineInput = { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] };
+type EngravingMode = "text" | "logo";
 
 async function writeCart(lines: CartLineInput[], savedCartId: string | null) {
   const request = (body: object) => fetch("/api/cart", {
@@ -35,19 +37,24 @@ export default function ProductPurchase({
   variants,
   enableEngraving = false,
   engravingVariantId,
+  logoUploadsEnabled = false,
 }: {
   productId: string;
   productName: string;
   variants: Variant[];
   enableEngraving?: boolean;
   engravingVariantId?: string | null;
+  logoUploadsEnabled?: boolean;
 }) {
   const firstAvailable = useMemo(() => variants.find((variant) => variant.availableForSale) || variants[0], [variants]);
   const [variantId, setVariantId] = useState(firstAvailable?.id || "");
   const [quantity, setQuantity] = useState(1);
   const [engravingEnabled, setEngravingEnabled] = useState(false);
+  const [engravingMode, setEngravingMode] = useState<EngravingMode>("text");
   const [engravingText, setEngravingText] = useState("");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "adding" | "added" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const selected = variants.find((variant) => variant.id === variantId) || firstAvailable;
   if (!selected) return <p className="text-sm text-white/50">This product is not currently available.</p>;
@@ -64,14 +71,37 @@ export default function ProductPurchase({
     }
   }
 
+  async function uploadLogo(file: File) {
+    if (file.size > 10 * 1024 * 1024) throw new Error("Logo file must be 10 MB or smaller.");
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-100) || "logo";
+    const blob = await upload(`engraving/${Date.now()}-${safeName}`, file, {
+      access: "public",
+      handleUploadUrl: "/api/uploads/engraving",
+      contentType: file.type || undefined,
+    });
+    return blob.url;
+  }
+
   async function addToCart() {
     if (!selected.availableForSale || status === "adding") return;
     setStatus("adding");
+    setErrorMessage("");
     try {
       const lines: CartLineInput[] = [{ merchandiseId: selected.id, quantity }];
 
-      if (enableEngraving && engravingEnabled && engravingVariantId && engravingText.trim()) {
-        lines.push({ merchandiseId: engravingVariantId, quantity, attributes: [{ key: "Engraving Text", value: engravingText.trim() }] });
+      if (enableEngraving && engravingEnabled && engravingVariantId) {
+        const attributes: { key: string; value: string }[] = [{ key: "Engraving Type", value: engravingMode === "logo" ? "Custom Logo" : "Text" }];
+        if (engravingMode === "text") {
+          if (!engravingText.trim()) throw new Error("Enter the engraving text before adding to cart.");
+          attributes.push({ key: "Engraving Text", value: engravingText.trim() });
+        } else {
+          if (!logoUploadsEnabled) throw new Error("Logo engraving uploads are not available yet.");
+          if (!logoFile) throw new Error("Choose your logo file before adding to cart.");
+          const logoUrl = await uploadLogo(logoFile);
+          attributes.push({ key: "Engraving Logo URL", value: logoUrl });
+          attributes.push({ key: "Engraving File Name", value: logoFile.name.slice(0, 120) });
+        }
+        lines.push({ merchandiseId: engravingVariantId, quantity, attributes });
       }
 
       const response = await writeCart(lines, localStorage.getItem("sh_shopify_cart_id"));
@@ -95,9 +125,14 @@ export default function ProductPurchase({
       window.setTimeout(() => setStatus("idle"), 2200);
     } catch (error) {
       console.error(error);
+      setErrorMessage(error instanceof Error ? error.message : "We couldn’t update the cart. Please try again.");
       setStatus("error");
     }
   }
+
+  const engravingInvalid = engravingEnabled && (
+    engravingMode === "text" ? !engravingText.trim() : !logoUploadsEnabled || !logoFile
+  );
 
   return (
     <div className="space-y-5">
@@ -113,16 +148,32 @@ export default function ProductPurchase({
       {enableEngraving && engravingVariantId && (
         <div className="rounded-xl border border-[#4AC9D3]/25 bg-[#4AC9D3]/5 p-4">
           <label className="flex cursor-pointer items-center gap-3"><input type="checkbox" checked={engravingEnabled} onChange={(event) => setEngravingEnabled(event.target.checked)} className="h-4 w-4 accent-[#4AC9D3]" /><span className="text-sm font-bold text-white">Add custom engraving</span></label>
-          {engravingEnabled && <div className="mt-4"><input value={engravingText} onChange={(event) => setEngravingText(event.target.value.slice(0, 60))} placeholder="Boat name or custom text" className="w-full rounded-lg border border-white/15 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/25 focus:border-[#4AC9D3]" /><div className="mt-2 text-right text-[11px] text-white/35">{engravingText.length}/60</div></div>}
+          {engravingEnabled && (
+            <div className="mt-4 space-y-4">
+              <div className="grid grid-cols-2 gap-2">
+                <button type="button" onClick={() => setEngravingMode("text")} className={`rounded-lg border px-3 py-2 text-xs font-bold ${engravingMode === "text" ? "border-[#4AC9D3] text-[#4AC9D3]" : "border-white/15 text-white/55"}`}>Text Engraving</button>
+                <button type="button" disabled={!logoUploadsEnabled} onClick={() => setEngravingMode("logo")} className={`rounded-lg border px-3 py-2 text-xs font-bold ${engravingMode === "logo" ? "border-[#4AC9D3] text-[#4AC9D3]" : "border-white/15 text-white/55"} disabled:cursor-not-allowed disabled:opacity-35`}>Custom Logo</button>
+              </div>
+              {engravingMode === "text" ? (
+                <div><input value={engravingText} onChange={(event) => setEngravingText(event.target.value.slice(0, 60))} placeholder="Boat name or custom text" className="w-full rounded-lg border border-white/15 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/25 focus:border-[#4AC9D3]" /><div className="mt-2 text-right text-[11px] text-white/35">{engravingText.length}/60</div></div>
+              ) : (
+                <div>
+                  <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,application/pdf" onChange={(event) => setLogoFile(event.target.files?.[0] || null)} className="block w-full text-xs text-white/55 file:mr-3 file:rounded-md file:border-0 file:bg-white/10 file:px-3 file:py-2 file:font-bold file:text-white" />
+                  <p className="mt-2 text-[11px] leading-5 text-white/35">PNG, JPG, WEBP, SVG or PDF. Maximum 10 MB. The uploaded artwork URL is attached to your Shopify order for production.</p>
+                </div>
+              )}
+              {!logoUploadsEnabled && <p className="text-[11px] text-white/35">Logo engraving upload is temporarily unavailable; text engraving remains available.</p>}
+            </div>
+          )}
         </div>
       )}
 
       <div className="flex gap-3">
         <div className="flex items-center rounded-lg border border-white/15 bg-[#0A0A0A]"><button aria-label="Decrease quantity" onClick={() => setQuantity((value) => Math.max(1, value - 1))} className="px-4 py-4 text-white/60 hover:text-white">−</button><span className="min-w-8 text-center text-sm font-bold">{quantity}</span><button aria-label="Increase quantity" onClick={() => setQuantity((value) => Math.min(10, value + 1))} className="px-4 py-4 text-white/60 hover:text-white">+</button></div>
-        <button onClick={addToCart} disabled={!selected.availableForSale || status === "adding" || (engravingEnabled && !engravingText.trim())} className="flex-1 rounded-lg bg-[#4AC9D3] px-6 py-4 text-sm font-black uppercase tracking-wider text-black transition hover:bg-[#6DD8E1] disabled:cursor-not-allowed disabled:opacity-45">{status === "adding" ? "Adding…" : status === "added" ? "Added to Cart ✓" : "Add to Cart"}</button>
+        <button onClick={addToCart} disabled={!selected.availableForSale || status === "adding" || engravingInvalid} className="flex-1 rounded-lg bg-[#4AC9D3] px-6 py-4 text-sm font-black uppercase tracking-wider text-black transition hover:bg-[#6DD8E1] disabled:cursor-not-allowed disabled:opacity-45">{status === "adding" ? (engravingMode === "logo" && engravingEnabled ? "Uploading…" : "Adding…") : status === "added" ? "Added to Cart ✓" : "Add to Cart"}</button>
       </div>
       {status === "added" && <a href="/cart" className="inline-block text-sm font-bold text-[#4AC9D3]">View cart →</a>}
-      {status === "error" && <p className="text-sm text-red-300">We couldn’t update the cart. Please try again.</p>}
+      {status === "error" && <p className="text-sm text-red-300">{errorMessage || "We couldn’t update the cart. Please try again."}</p>}
     </div>
   );
 }
