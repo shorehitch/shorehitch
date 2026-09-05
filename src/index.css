@@ -18,3 +18,8 @@
 /* Premium media treatment: retain contrast without burying photography/video in black. */
 .hero-media{filter:brightness(1.16) saturate(1.08) contrast(1.02)}
 .premium-media{filter:brightness(1.08) saturate(1.04)}
+
+/* Readability pass: preserve the premium muted hierarchy while making secondary copy and navigation easier to scan. */
+.text-white\/35,.text-white\/40,.text-white\/45,.text-white\/48,.text-white\/50,.text-white\/52,.text-white\/55,.text-white\/58,.text-white\/60,.text-white\/62{font-size:max(1em,15px);line-height:1.65}
+nav a{font-size:max(1em,14px)}
+@media (min-width:1024px){header nav a{font-size:14.5px!important}}
