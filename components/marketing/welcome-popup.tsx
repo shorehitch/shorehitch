@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 
 const STORAGE_KEY = "shorehitch_welcome10_seen";
+declare global { interface Window { klaviyo?: unknown[] & { push?: (event: unknown) => void }; } }
 
 export default function WelcomePopup() {
   const [open, setOpen] = useState(false);
@@ -15,62 +16,33 @@ export default function WelcomePopup() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  function close() {
-    sessionStorage.setItem(STORAGE_KEY, "1");
-    setOpen(false);
-  }
+  function close() { sessionStorage.setItem(STORAGE_KEY, "1"); setOpen(false); }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setStatus("sending");
-    setError("");
+    event.preventDefault(); setStatus("sending"); setError("");
     const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries());
+    const data = Object.fromEntries(new FormData(form).entries()) as Record<string, FormDataEntryValue>;
     try {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, type: "welcome", message: "Welcome10 email and phone capture" }),
-      });
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload?.error || "Unable to submit");
-      sessionStorage.setItem(STORAGE_KEY, "1");
-      setStatus("success");
-    } catch (caught) {
-      setStatus("error");
-      setError(caught instanceof Error ? caught.message : "Unable to submit right now.");
-    }
+      const response = await fetch("/api/leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...data, type: "welcome", message: "Welcome10 email and phone capture" }) });
+      const payload = await response.json(); if (!response.ok) throw new Error(payload?.error || "Unable to submit");
+      if (window.klaviyo?.push) {
+        const email=String(data.email||""); const phone=String(data.phone||""); const firstName=String(data.firstName||""); const lastName=String(data.lastName||"");
+        window.klaviyo.push(["identify", { "$email":email, "$phone_number":phone, "$first_name":firstName, "$last_name":lastName, "ShoreHitch Offer":"WELCOME10" }]);
+        window.klaviyo.push(["track", "WELCOME10 Signup", { offer:"WELCOME10", source:"shorehitch-headless" }]);
+      }
+      sessionStorage.setItem(STORAGE_KEY, "1"); setStatus("success");
+    } catch (caught) { setStatus("error"); setError(caught instanceof Error ? caught.message : "Unable to submit right now."); }
   }
 
   if (!open) return null;
-
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/68 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Welcome offer">
       <div className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-white/15 bg-[#080808] shadow-2xl shadow-black/70">
         <button onClick={close} aria-label="Close welcome offer" className="absolute right-4 top-4 z-10 rounded-full border border-white/15 bg-black/60 px-3 py-1.5 text-sm text-white/70 hover:text-white">×</button>
         <div className="border-b border-white/10 bg-[radial-gradient(circle_at_80%_20%,rgba(74,201,211,.18),transparent_36%)] px-6 pb-7 pt-9 sm:px-8">
-          <div className="text-[10px] font-black uppercase tracking-[.26em] text-[#4AC9D3]">Welcome to ShoreHitch</div>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-white">Take 10% off your first order.</h2>
-          <p className="mt-3 text-sm leading-6 text-white/58">Enter your email and mobile number to unlock your first-order code and receive ShoreHitch product drops and gear updates.</p>
+          <div className="text-[10px] font-black uppercase tracking-[.26em] text-[#4AC9D3]">Welcome to ShoreHitch</div><h2 className="mt-3 text-4xl font-extrabold tracking-tight text-white">Take 10% off your first order.</h2><p className="mt-3 text-sm leading-6 text-white/58">Enter your email and mobile number to unlock your first-order code and receive ShoreHitch product drops and gear updates.</p>
         </div>
-        {status === "success" ? (
-          <div className="px-6 py-8 text-center sm:px-8">
-            <div className="text-xs font-black uppercase tracking-[.22em] text-[#4AC9D3]">Your code</div>
-            <div className="mx-auto mt-4 max-w-xs rounded-xl border border-[#4AC9D3]/45 bg-[#4AC9D3]/10 px-6 py-5 text-3xl font-black tracking-[.14em] text-white">WELCOME10</div>
-            <p className="mt-4 text-sm text-white/48">Use this code at Shopify checkout for 10% off.</p>
-            <button onClick={close} className="mt-6 rounded bg-[#4AC9D3] px-6 py-3 text-xs font-black uppercase tracking-wider text-black">Start shopping</button>
-          </div>
-        ) : (
-          <form onSubmit={submit} className="grid gap-3 px-6 py-7 sm:px-8">
-            <div className="grid gap-3 sm:grid-cols-2"><input name="firstName" required placeholder="First name" autoComplete="given-name" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/><input name="lastName" required placeholder="Last name" autoComplete="family-name" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/></div>
-            <input name="email" type="email" required placeholder="Email address *" autoComplete="email" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/>
-            <input name="phone" type="tel" required placeholder="Mobile phone *" autoComplete="tel" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/>
-            <input name="companyWebsite" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
-            <button disabled={status === "sending"} className="mt-1 rounded bg-[#4AC9D3] px-6 py-3.5 text-sm font-black uppercase tracking-wider text-black hover:bg-[#6DD8E1] disabled:opacity-60">{status === "sending" ? "Unlocking…" : "Unlock 10% Off"}</button>
-            {error ? <p className="text-sm text-red-300">{error}</p> : null}
-            <button type="button" onClick={close} className="text-xs text-white/35 hover:text-white/60">No thanks, continue to ShoreHitch</button>
-          </form>
-        )}
+        {status === "success" ? <div className="px-6 py-8 text-center sm:px-8"><div className="text-xs font-black uppercase tracking-[.22em] text-[#4AC9D3]">Your code</div><div className="mx-auto mt-4 max-w-xs rounded-xl border border-[#4AC9D3]/45 bg-[#4AC9D3]/10 px-6 py-5 text-3xl font-black tracking-[.14em] text-white">WELCOME10</div><p className="mt-4 text-sm text-white/48">Use this code at Shopify checkout for 10% off.</p><button onClick={close} className="mt-6 rounded bg-[#4AC9D3] px-6 py-3 text-xs font-black uppercase tracking-wider text-black">Start shopping</button></div> : <form onSubmit={submit} className="grid gap-3 px-6 py-7 sm:px-8"><div className="grid gap-3 sm:grid-cols-2"><input name="firstName" required placeholder="First name" autoComplete="given-name" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/><input name="lastName" required placeholder="Last name" autoComplete="family-name" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/></div><input name="email" type="email" required placeholder="Email address *" autoComplete="email" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/><input name="phone" type="tel" required placeholder="Mobile phone *" autoComplete="tel" className="rounded-lg border border-white/15 bg-white/[.04] px-4 py-3 text-white outline-none focus:border-[#4AC9D3]"/><input name="companyWebsite" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true"/><button disabled={status === "sending"} className="mt-1 rounded bg-[#4AC9D3] px-6 py-3.5 text-sm font-black uppercase tracking-wider text-black hover:bg-[#6DD8E1] disabled:opacity-60">{status === "sending" ? "Unlocking…" : "Unlock 10% Off"}</button>{error ? <p className="text-sm text-red-300">{error}</p> : null}<button type="button" onClick={close} className="text-xs text-white/35 hover:text-white/60">No thanks, continue to ShoreHitch</button></form>}
       </div>
     </div>
   );
