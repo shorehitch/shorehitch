@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
     return [
       { source: "/catalog", destination: "/shop", permanent: true },
       { source: "/collections", destination: "/shop", permanent: true },
+      { source: "/collections/all", destination: "/shop", permanent: true },
+      { source: "/collections/frontpage", destination: "/shop", permanent: true },
+      { source: "/products-preview", destination: "/shop", permanent: true },
+      { source: "/pages/where-to-buy", destination: "/dealer", permanent: true },
+      {
+        source: "/blogs/news/how-to-anchor-your-boat-at-a-sandbar-essential-safety-tips-for-beginners-1",
+        destination: "/anchor-education/how-to-anchor-at-a-sandbar",
+        permanent: true,
+      },
     ];
   },
   async headers() {
