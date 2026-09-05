@@ -6,7 +6,7 @@ import { useState } from "react";
 import CartLink from "../cart/cart-link";
 
 const links=[
- {href:"/",label:"Home"},{href:"/shop",label:"Shop"},{href:"/why-shorehitch",label:"Why ShoreHitch"},{href:"/which-shorehitch",label:"Which ShoreHitch?"},{href:"/how-it-works",label:"How It Works"},{href:"/reviews",label:"Reviews"},{href:"/dealer",label:"Become a Dealer"},{href:"/contact",label:"Contact"}
+ {href:"/",label:"Home"},{href:"/shop",label:"Shop"},{href:"/which-shorehitch",label:"Which ShoreHitch?"},{href:"/how-it-works",label:"How It Works"},{href:"/reviews",label:"Reviews"},{href:"/dealer",label:"Become a Dealer"},{href:"/contact",label:"Contact"}
 ];
 function SearchIcon(){return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>}
 function MenuIcon({open}:{open:boolean}){return open?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg>:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>}
