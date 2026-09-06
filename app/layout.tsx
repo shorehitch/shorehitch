@@ -1,0 +1,18 @@
+import type { Metadata } from "next";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import Analytics from "../components/analytics/analytics";
+import OrganizationJsonLd from "../components/seo/organization-jsonld";
+import WelcomePopup from "../components/marketing/welcome-popup";
+import "../src/index.css";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://shorehitch.vercel.app"),
+  title: { default: "ShoreHitch — Anchoring Redefined", template: "%s — ShoreHitch" },
+  description: "Premium American-designed anchoring systems and marine accessories built for boaters who expect more.",
+  robots: { index: process.env.VERCEL_ENV === "production", follow: process.env.VERCEL_ENV === "production" },
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return <html lang="en"><body><OrganizationJsonLd />{children}<WelcomePopup /><Analytics /><VercelAnalytics /><SpeedInsights /></body></html>;
+}

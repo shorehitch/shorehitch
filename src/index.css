@@ -1,147 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
-/*
-  Neue Montreal (brand font) — self-hosted.
-  Place your licensed .woff2 files in public/fonts/ and
-  uncomment the @font-face blocks below.
-*/
-
-/* @font-face {
-  font-family: 'Neue Montreal';
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url('/fonts/NeueMontreal-Light.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Neue Montreal';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/NeueMontreal-Regular.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Neue Montreal';
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/NeueMontreal-Italic.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Neue Montreal';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('/fonts/NeueMontreal-Medium.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Neue Montreal';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/NeueMontreal-Bold.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Neue Montreal';
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/NeueMontreal-BoldItalic.woff2') format('woff2');
-} */
-
+/* Neue Montreal remains the preferred licensed brand face when self-hosted. */
 @theme {
   --font-sans: 'Neue Montreal', 'Outfit', system-ui, sans-serif;
-
-  /* Brand palette */
-  --color-brand-black:  #000000;
-  --color-brand-cyan:   #4AC9D3;
-  --color-brand-steel:  #0044FE;
-  --color-brand-white:  #FFFFFF;
-
-  /* Surface steps */
-  --color-surface-0:  #000000;
-  --color-surface-1:  #0A0A0A;
-  --color-surface-2:  #111111;
-  --color-surface-3:  #1A1A1A;
+  --color-brand-black:#000000; --color-brand-cyan:#4AC9D3; --color-brand-steel:#0044FE; --color-brand-white:#FFFFFF;
+  --color-surface-0:#000000; --color-surface-1:#0A0A0A; --color-surface-2:#111111; --color-surface-3:#1A1A1A;
 }
+*{box-sizing:border-box} html{scroll-behavior:smooth;font-size:18px} body{font-family:var(--font-sans);background:#000;color:#fff;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#000}::-webkit-scrollbar-thumb{background:#4AC9D333;border-radius:3px}::-webkit-scrollbar-thumb:hover{background:#4AC9D3}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}.ticker-track{animation:ticker 32s linear infinite}.ticker-track:hover{animation-play-state:paused}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}.cyan-shimmer{background:linear-gradient(90deg,#4AC9D3 0%,#a0edf2 45%,#4AC9D3 60%,#0044FE 100%);background-size:200% auto;animation:shimmer 4s linear infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.product-card{transition:transform .22s ease,box-shadow .22s ease}.product-card:hover{transform:translateY(-5px);box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 0 1px rgba(74,201,211,.25)}
+@keyframes pulse-cyan{0%{box-shadow:0 0 0 0 rgba(74,201,211,.5)}70%{box-shadow:0 0 0 12px rgba(74,201,211,0)}100%{box-shadow:0 0 0 0 rgba(74,201,211,0)}}.cta-pulse{animation:pulse-cyan 2.5s ease-out infinite}
+.star-fill{color:#4AC9D3}.rule-cyan{height:1px;background:linear-gradient(90deg,transparent,#4AC9D355,transparent)}.steel-text{background:linear-gradient(135deg,#4AC9D3 0%,#0044FE 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.feature-glow{box-shadow:0 0 20px rgba(74,201,211,.15)}
 
-* { box-sizing: border-box; }
+/* Premium media treatment: retain contrast without burying photography/video in black. */
+.hero-media{filter:brightness(1.16) saturate(1.08) contrast(1.02)}
+.premium-media{filter:brightness(1.08) saturate(1.04)}
+/* Baby Hitch lifestyle images must show the complete product/scene instead of cropping it. */
+img[src*="7740C8BA-0192-49AD-B6D8-7DAA70E45FE1"],img[src*="00852E52-F824-4A41-8548-5AE33530A3CC"]{object-fit:contain!important;background:#070707}
 
-html {
-  scroll-behavior: smooth;
-  font-size: 17px;
-}
-
-body {
-  font-family: var(--font-sans);
-  background-color: #000000;
-  color: #FFFFFF;
-  -webkit-font-smoothing: antialiased;
-}
-
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #000; }
-::-webkit-scrollbar-thumb { background: #4AC9D333; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #4AC9D3; }
-
-/* Announcement ticker */
-@keyframes ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.ticker-track { animation: ticker 32s linear infinite; }
-.ticker-track:hover { animation-play-state: paused; }
-
-/* Cyan shimmer on hero headline */
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-.cyan-shimmer {
-  background: linear-gradient(90deg, #4AC9D3 0%, #a0edf2 45%, #4AC9D3 60%, #0044FE 100%);
-  background-size: 200% auto;
-  animation: shimmer 4s linear infinite;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Card hover */
-.product-card {
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(74,201,211,0.25);
-}
-
-/* CTA glow pulse — cyan */
-@keyframes pulse-cyan {
-  0%   { box-shadow: 0 0 0 0 rgba(74,201,211,0.5); }
-  70%  { box-shadow: 0 0 0 12px rgba(74,201,211,0); }
-  100% { box-shadow: 0 0 0 0 rgba(74,201,211,0); }
-}
-.cta-pulse { animation: pulse-cyan 2.5s ease-out infinite; }
-
-/* Stars */
-.star-fill { color: #4AC9D3; }
-
-/* Divider */
-.rule-cyan {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #4AC9D355, transparent);
-}
-
-/* Steel blue gradient text */
-.steel-text {
-  background: linear-gradient(135deg, #4AC9D3 0%, #0044FE 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Feature badge glow */
-.feature-glow {
-  box-shadow: 0 0 20px rgba(74, 201, 211, 0.15);
-}
+/* Readability pass: slightly larger supporting copy while preserving the premium hierarchy. */
+p{font-size:max(1em,16px)}
+.text-white\/35,.text-white\/40,.text-white\/45,.text-white\/48,.text-white\/50,.text-white\/52,.text-white\/55,.text-white\/58,.text-white\/60,.text-white\/62{font-size:max(1em,16px);line-height:1.68}
+nav a{font-size:max(1em,14px)}
+@media (min-width:1024px){header nav a{font-size:15px!important}}
