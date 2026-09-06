@@ -18,6 +18,8 @@
 /* Premium media treatment: retain contrast without burying photography/video in black. */
 .hero-media{filter:brightness(1.16) saturate(1.08) contrast(1.02)}
 .premium-media{filter:brightness(1.08) saturate(1.04)}
+/* Baby Hitch lifestyle images must show the complete product/scene instead of cropping it. */
+img[src*="7740C8BA-0192-49AD-B6D8-7DAA70E45FE1"],img[src*="00852E52-F824-4A41-8548-5AE33530A3CC"]{object-fit:contain!important;background:#070707}
 
 /* Readability pass: slightly larger supporting copy while preserving the premium hierarchy. */
 p{font-size:max(1em,16px)}
