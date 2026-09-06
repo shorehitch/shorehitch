@@ -2,10 +2,6 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  if (process.env.NEXT_PUBLIC_ENGRAVING_LOGO_UPLOADS_ENABLED !== "true") {
-    return NextResponse.json({ error: "Logo uploads are not enabled." }, { status: 503 });
-  }
-
   try {
     const body = (await request.json()) as HandleUploadBody;
     const jsonResponse = await handleUpload({
