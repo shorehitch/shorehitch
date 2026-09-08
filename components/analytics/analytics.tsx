@@ -1,10 +1,62 @@
+"use client";
+
 import Script from "next/script";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef } from "react";
+
+const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+const klaviyoKey = process.env.NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY;
+
+function RouteAnalytics() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const firstRender = useRef(true);
+
+  useEffect(() => {
+    // The base scripts record the initial page view. This effect records only
+    // subsequent Next.js client-side navigations so SPA traffic is not lost.
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+
+    const query = searchParams.toString();
+    const pagePath = query ? `${pathname}?${query}` : pathname;
+    const pageLocation = `${window.location.origin}${pagePath}`;
+
+    if (gaId && window.gtag) {
+      window.gtag("event", "page_view", {
+        page_title: document.title,
+        page_location: pageLocation,
+        page_path: pagePath,
+      });
+    }
+
+    if (metaPixelId && window.fbq) {
+      window.fbq("track", "PageView");
+    }
+
+    window.klaviyo?.push?.(["track", "Viewed Page", {
+      URL: pageLocation,
+      Path: pagePath,
+      Title: document.title,
+    }]);
+  }, [pathname, searchParams]);
+
+  return null;
+}
+
+declare global {
+  interface Window {
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+    fbq?: (...args: unknown[]) => void;
+    klaviyo?: unknown[] & { push?: (event: unknown) => void };
+  }
+}
 
 export default function Analytics() {
-  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-  const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-  const klaviyoKey = process.env.NEXT_PUBLIC_KLAVIYO_PUBLIC_KEY;
-
   return (
     <>
       {gaId && (
@@ -13,6 +65,7 @@ export default function Analytics() {
           <Script id="ga4" strategy="afterInteractive">{`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
+            window.gtag = window.gtag || gtag;
             gtag('js', new Date());
             gtag('config', '${gaId}', { send_page_view: true });
           `}</Script>
@@ -29,6 +82,7 @@ export default function Analytics() {
         `}</Script>
       )}
       {klaviyoKey && <Script src={`https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${klaviyoKey}`} strategy="afterInteractive" />}
+      <Suspense fallback={null}><RouteAnalytics /></Suspense>
     </>
   );
 }
