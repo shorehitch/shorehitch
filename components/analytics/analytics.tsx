@@ -37,11 +37,11 @@ function RouteAnalytics() {
       window.fbq("track", "PageView");
     }
 
-    window.klaviyo?.push?.(["track", "Viewed Page", {
+    window.klaviyo?.track?.("Viewed Page", {
       URL: pageLocation,
       Path: pagePath,
       Title: document.title,
-    }]);
+    });
   }, [pathname, searchParams]);
 
   return null;
@@ -52,7 +52,12 @@ declare global {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
     fbq?: (...args: unknown[]) => void;
-    klaviyo?: unknown[] & { push?: (event: unknown) => void };
+    klaviyo?: {
+      track?: (event: string, properties?: Record<string, unknown>) => Promise<unknown> | void;
+      identify?: (properties: Record<string, unknown>) => Promise<unknown> | void;
+      push?: (...args: unknown[]) => void;
+    };
+    _klOnsite?: unknown[];
   }
 }
 
@@ -81,7 +86,14 @@ export default function Analytics() {
           fbq('init', '${metaPixelId}'); fbq('track', 'PageView');
         `}</Script>
       )}
-      {klaviyoKey && <Script src={`https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${klaviyoKey}`} strategy="afterInteractive" />}
+      {klaviyoKey && (
+        <>
+          <Script id="klaviyo-bootstrap" strategy="beforeInteractive">{`
+            !function(){if(!window.klaviyo){window._klOnsite=window._klOnsite||[];try{window.klaviyo=new Proxy({},{get:function(n,i){return"push"===i?function(){var n;(n=window._klOnsite).push.apply(n,arguments)}:function(){for(var n=arguments.length,o=new Array(n),w=0;w<n;w++)o[w]=arguments[w];var t="function"==typeof o[o.length-1]?o.pop():void 0,e=new Promise(function(n){window._klOnsite.push([i].concat(o,[function(i){t&&t(i),n(i)}]))});return e}}})}catch(n){window.klaviyo=window.klaviyo||{},window.klaviyo.push=function(){var n;(n=window._klOnsite).push.apply(n,arguments)}}}}();
+          `}</Script>
+          <Script src={`https://static.klaviyo.com/onsite/js/${klaviyoKey}/klaviyo.js`} strategy="afterInteractive" />
+        </>
+      )}
       <Suspense fallback={null}><RouteAnalytics /></Suspense>
     </>
   );
