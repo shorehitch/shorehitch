@@ -25,6 +25,7 @@ declare global {
       identify?: (properties: Record<string, unknown>) => Promise<unknown> | void;
       push?: (...args: unknown[]) => void;
     };
+    _klOnsite?: unknown[];
   }
 }
 
@@ -75,7 +76,5 @@ export function trackCommerceEvent(name: string, payload: CommerceEvent = {}) {
     search: "Searched Site",
   };
   const klaviyoEvent = klaviyoMap[name];
-  if (klaviyoEvent) {
-    window.klaviyo?.track?.(klaviyoEvent, klaviyoPayload(payload));
-  }
+  if (klaviyoEvent) window.klaviyo?.track?.(klaviyoEvent, klaviyoPayload(payload));
 }
