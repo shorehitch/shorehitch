@@ -15,6 +15,8 @@ type CommerceEvent = {
   items?: CommerceItem[];
 };
 
+type KlaviyoCommand = [string, ...unknown[]];
+
 declare global {
   interface Window {
     dataLayer?: unknown[];
@@ -25,7 +27,7 @@ declare global {
       identify?: (properties: Record<string, unknown>) => Promise<unknown> | void;
       push?: (...args: unknown[]) => void;
     };
-    _klOnsite?: unknown[];
+    _klOnsite?: KlaviyoCommand[];
   }
 }
 
@@ -33,6 +35,7 @@ function klaviyoPayload(payload: CommerceEvent) {
   const firstItem = payload.items?.[0];
   return {
     ProductID: firstItem?.item_id,
+    Product: firstItem?.item_name,
     Name: firstItem?.item_name,
     Variant: firstItem?.item_variant,
     Price: firstItem?.price,
@@ -43,6 +46,15 @@ function klaviyoPayload(payload: CommerceEvent) {
     Items: payload.items,
     URL: typeof window !== "undefined" ? window.location.href : undefined,
   };
+}
+
+function trackKlaviyo(event: string, properties: Record<string, unknown>) {
+  if (window.klaviyo?.track) {
+    window.klaviyo.track(event, properties);
+    return;
+  }
+  window._klOnsite = window._klOnsite || [];
+  window._klOnsite.push(["track", event, properties]);
 }
 
 export function trackCommerceEvent(name: string, payload: CommerceEvent = {}) {
@@ -76,5 +88,5 @@ export function trackCommerceEvent(name: string, payload: CommerceEvent = {}) {
     search: "Searched Site",
   };
   const klaviyoEvent = klaviyoMap[name];
-  if (klaviyoEvent) window.klaviyo?.track?.(klaviyoEvent, klaviyoPayload(payload));
+  if (klaviyoEvent) trackKlaviyo(klaviyoEvent, klaviyoPayload(payload));
 }
