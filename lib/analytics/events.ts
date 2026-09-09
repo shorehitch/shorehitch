@@ -20,8 +20,28 @@ declare global {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
     fbq?: (...args: unknown[]) => void;
-    klaviyo?: unknown[] & { push?: (event: unknown) => void };
+    klaviyo?: {
+      track?: (event: string, properties?: Record<string, unknown>) => Promise<unknown> | void;
+      identify?: (properties: Record<string, unknown>) => Promise<unknown> | void;
+      push?: (...args: unknown[]) => void;
+    };
   }
+}
+
+function klaviyoPayload(payload: CommerceEvent) {
+  const firstItem = payload.items?.[0];
+  return {
+    ProductID: firstItem?.item_id,
+    Name: firstItem?.item_name,
+    Variant: firstItem?.item_variant,
+    Price: firstItem?.price,
+    Quantity: firstItem?.quantity,
+    Currency: payload.currency,
+    Value: payload.value,
+    SearchTerm: payload.search_term,
+    Items: payload.items,
+    URL: typeof window !== "undefined" ? window.location.href : undefined,
+  };
 }
 
 export function trackCommerceEvent(name: string, payload: CommerceEvent = {}) {
@@ -48,5 +68,14 @@ export function trackCommerceEvent(name: string, payload: CommerceEvent = {}) {
     });
   }
 
-  window.klaviyo?.push?.(["track", name, payload]);
+  const klaviyoMap: Record<string, string> = {
+    view_item: "Viewed Product",
+    add_to_cart: "Added to Cart",
+    begin_checkout: "Started Checkout",
+    search: "Searched Site",
+  };
+  const klaviyoEvent = klaviyoMap[name];
+  if (klaviyoEvent) {
+    window.klaviyo?.track?.(klaviyoEvent, klaviyoPayload(payload));
+  }
 }
