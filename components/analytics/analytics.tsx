@@ -14,8 +14,6 @@ function RouteAnalytics() {
   const firstRender = useRef(true);
 
   useEffect(() => {
-    // The base scripts record the initial page view. This effect records only
-    // subsequent Next.js client-side navigations so SPA traffic is not lost.
     if (firstRender.current) {
       firstRender.current = false;
       return;
@@ -33,9 +31,7 @@ function RouteAnalytics() {
       });
     }
 
-    if (metaPixelId && window.fbq) {
-      window.fbq("track", "PageView");
-    }
+    if (metaPixelId && window.fbq) window.fbq("track", "PageView");
 
     window.klaviyo?.track?.("Viewed Page", {
       URL: pageLocation,
@@ -45,20 +41,6 @@ function RouteAnalytics() {
   }, [pathname, searchParams]);
 
   return null;
-}
-
-declare global {
-  interface Window {
-    dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
-    fbq?: (...args: unknown[]) => void;
-    klaviyo?: {
-      track?: (event: string, properties?: Record<string, unknown>) => Promise<unknown> | void;
-      identify?: (properties: Record<string, unknown>) => Promise<unknown> | void;
-      push?: (...args: unknown[]) => void;
-    };
-    _klOnsite?: unknown[];
-  }
 }
 
 export default function Analytics() {
